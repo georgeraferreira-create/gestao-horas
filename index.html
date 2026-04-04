@@ -462,7 +462,7 @@ async function initLogin() {
     recs.forEach(function(r) {
       const opt = document.createElement("option");
       opt.value = r.id;
-      opt.dataset.pin = r.fields["PIN"] || "";
+      opt.dataset.pin = String(r.fields["PIN"] || "");
       opt.dataset.admin = r.fields["Admin"] ? "1" : "0";
       opt.dataset.name = r.fields["Nome"] || "";
       opt.textContent = r.fields["Nome"] || r.id;
@@ -492,7 +492,7 @@ function doLogin() {
   const opt = sel.options[sel.selectedIndex];
   const errEl = document.getElementById("login-error");
   if (!opt || !opt.value) { errEl.style.display="block"; errEl.textContent="Selecione seu nome."; return; }
-  if (pin !== opt.dataset.pin) { errEl.style.display="block"; errEl.textContent="PIN incorreto."; return; }
+  if (pin !== String(opt.dataset.pin)) { errEl.style.display="block"; errEl.textContent="PIN incorreto."; return; }
   errEl.style.display = "none";
   currentUser = { id: opt.value, name: opt.dataset.name, isAdmin: opt.dataset.admin === "1" };
   sessionStorage.setItem("gh_user", JSON.stringify(currentUser));
