@@ -21,7 +21,7 @@
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:14px;min-height:100vh}
-.shell{display:flex;min-height:100vh}
+.shell{display:block;min-height:100vh}
 .sidebar{width:220px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:50;overflow-y:auto}
 .main{margin-left:220px;display:block;padding:32px;max-width:1200px}
 .sidebar-logo{padding:24px 20px 20px;border-bottom:1px solid var(--border)}
@@ -858,96 +858,94 @@ async function writeLog(acao, tabela, registro, campo, valAnt, valNovo) {
 
 
 async function loadFromAirtable() {
-  const statusEl = document.getElementById("at-sync-status");
+  var statusEl = document.getElementById("at-sync-status");
   if (statusEl) { statusEl.textContent = "Sincronizando..."; statusEl.style.display = "block"; }
   try {
-    // Load projects
-    const projRecs = await atList(AT_TABLES.projects);
-    console.log("Projetos raw:", projRecs.length, projRecs[0]);
-    db.projects = projRecs.map(function(r){ return {
-      id: r.id, _atId: r.id,
-      name: r.fields["Nome"]||r.fields["Name"]||"", 
-      client: r.fields["Cliente"]||"",
-      start: r.fields["Start"]||"", 
-      deadline: r.fields["Prazo"]||""
-    }; });
+    var projRecs = await atList(AT_TABLES.projects);
+    db.projects = projRecs.map(function(r) {
+      return { id:r.id, _atId:r.id, name:r.fields["Nome"]||"", client:r.fields["Cliente"]||"", start:r.fields["Start"]||"", deadline:r.fields["Prazo"]||"" };
+    });
+    var projByName = {};
+    db.projects.forEach(function(p) { projByName[p.name.toLowerCase()]=p.id; if(p.client) projByName[p.client.toLowerCase()]=p.id; });
 
-    // Load consultants
-    const consRecs = await atList(AT_TABLES.consultants);
-    console.log("Consultores raw:", consRecs.length, consRecs[0]);
-    db.consultants = consRecs.map(function(r){ return {
-      id: r.id, _atId: r.id,
-      name: r.fields["Nome"]||r.fields["Name"]||"", 
-      cargo: r.fields["Cargo"]||"",
-      capacity: Number(r.fields["Capacidade Mensal (h)"]||r.fields["Capacidade"]||160),
-      pin: r.fields["PIN"]||"", 
-      isAdmin: !!r.fields["Admin"]
-    }; });
+    var consRecs = await atList(AT_TABLES.consultants);
+    db.consultants = consRecs.map(function(r) {
+      return { id:r.id, _atId:r.id, name:r.fields["Nome"]||"", cargo:r.fields["Cargo"]||"", capacity:Number(r.fields["Capacidade Mensal (h)"]||160), pin:String(r.fields["PIN"]||""), isAdmin:!!r.fields["Admin"] };
+    });
     localStorage.setItem("gh_consultants", JSON.stringify(db.consultants));
+    localStorage.setItem("_cons_cache", JSON.stringify(consRecs));
+    var consByName = {};
+    db.consultants.forEach(function(c) { consByName[c.name.toLowerCase()]=c.id; });
 
-    // Load tasks
-    const taskRecs = await atList(AT_TABLES.tasks);
-    console.log("Tarefas raw:", taskRecs.length, taskRecs[0]);
-    db.tasks = taskRecs.map(function(r){ 
+    function resolveId(val, map) {
+      if (!val) return "";
+      var arr = Array.isArray(val) ? val : [val];
+      var v = String(arr[0]||"");
+      if (v.startsWith("rec")) return v;
+      return map[v.toLowerCase()]||"";
+    }
+    function resolveLevel(raw) {
+      var l = (raw||"").toLowerCase();
+      if (l==="atividade"||l==="activity") return "activity";
+      if (l==="subtarefa"||l==="subtask") return "subtask";
+      return "task";
+    }
+
+    var taskRecs = await atList(AT_TABLES.tasks);
+    var taskByName = {};
+    taskRecs.forEach(function(r) { taskByName[(r.fields["Nome"]||"").toLowerCase()]=r.id; });
+    function resolveParent(val) {
+      if (!val) return null;
+      var arr = Array.isArray(val)?val:[val];
+      var v = String(arr[0]||"");
+      if (!v) return null;
+      if (v.startsWith("rec")) return v;
+      return taskByName[v.toLowerCase()]||null;
+    }
+
+    db.tasks = taskRecs.map(function(r) {
       var f = r.fields;
-      // parentId: check both activity and task parent fields
-      var parentId = null;
-      if (f["Atividade Pai"] && f["Atividade Pai"].length) parentId = f["Atividade Pai"][0];
-      else if (f["Tarefa Pai"] && f["Tarefa Pai"].length) parentId = f["Tarefa Pai"][0];
       return {
-        id: r.id, _atId: r.id,
-        projectId:    f["Projeto"] && f["Projeto"].length ? f["Projeto"][0] : "",
-        consultantId: f["Consultor"] && f["Consultor"].length ? f["Consultor"][0] : "",
-        level:        f["Nivel"]||"task",
-        parentId:     parentId,
-        name:         f["Nome"]||f["Name"]||"",
+        id:r.id, _atId:r.id,
+        projectId:    resolveId(f["Projeto"], projByName),
+        consultantId: resolveId(f["Consultor"], consByName),
+        level:        resolveLevel(f["Nivel"]),
+        parentId:     resolveParent(f["Atividade Pai"])||resolveParent(f["Tarefa Pai"]),
+        name:         f["Nome"]||"",
         hours:        Number(f["Horas Planejadas"]||0),
         realized:     Number(f["Horas Realizadas"]||0),
         status:       f["Status"]||"todo",
         startDate:    f["Data Inicio"]||"",
         endDate:      f["Data Fim"]||"",
         note:         f["Nota"]||"",
-        order:        Number(f["Ordem"]||0)
-      }; 
+        order:        Number(f["Ordem"]||0),
+        weeklyData:   []
+      };
     });
 
-    // Load sprints
-    const sprintRecs = await atList(AT_TABLES.sprints);
-    console.log("Sprints raw:", sprintRecs.length);
-    db.sprints = sprintRecs.map(function(r){ 
+    var sprintRecs = await atList(AT_TABLES.sprints);
+    db.sprints = sprintRecs.map(function(r) {
       var f = r.fields;
       return {
-        id: r.id, _atId: r.id,
+        id:r.id, _atId:r.id,
         weekStart:    f["Semana (segunda-feira)"]||"",
-        consultantId: f["Consultor"] && f["Consultor"].length ? f["Consultor"][0] : "",
-        projectId:    f["Projeto"] && f["Projeto"].length ? f["Projeto"][0] : "",
+        consultantId: resolveId(f["Consultor"], consByName),
+        projectId:    resolveId(f["Projeto"], projByName),
         stage:        f["Etapa"]||"",
         hours:        Number(f["Horas"]||0),
         taskOrigin:   f["Tarefa Origem"]||"",
         aiInferred:   !!f["Inferido por IA"],
         confirmed:    !!f["Confirmado"],
         note:         f["Nota"]||""
-      }; 
+      };
     });
 
-    console.log("DB after load:", {
-      projects: db.projects.length,
-      consultants: db.consultants.length,
-      tasks: db.tasks.length,
-      sprints: db.sprints.length,
-      firstProject: db.projects[0],
-      firstConsultant: db.consultants[0]
-    });
-
-    if (statusEl) { 
-      statusEl.textContent = db.projects.length + " projetos, " + db.consultants.length + " consultores carregados";
-      setTimeout(function(){ if(statusEl) statusEl.style.display="none"; }, 4000); 
-    }
+    if (statusEl) { statusEl.textContent = db.projects.length+"p · "+db.consultants.length+"c · "+db.tasks.length+"t"; setTimeout(function(){ if(statusEl) statusEl.style.display="none"; },3000); }
     renderAll();
   } catch(e) {
     console.error("Airtable load failed:", e);
     load();
-    if (statusEl) { statusEl.textContent = "Erro: " + e.message; }
+    if (statusEl) statusEl.textContent = "Offline: "+e.message;
     renderAll();
   }
 }
@@ -2853,33 +2851,8 @@ function renderAll(){
   if(document.getElementById('sec-sprint')?.classList.contains('active')) renderSprint();
 }
 
-// Init: called after login
 function initApp() {
   loadFromAirtable();
-  var footer = document.querySelector('.sidebar-footer');
-  if (footer) {
-    var syncDiv = document.createElement('div');
-    syncDiv.id = 'at-sync-status';
-    syncDiv.style = 'font-size:11px;color:#2d6a4f;margin-bottom:6px;display:none';
-    footer.innerHTML = '';
-    footer.appendChild(syncDiv);
-    var nameDiv = document.createElement('div');
-    nameDiv.style = 'font-size:11px;color:var(--text3)';
-    nameDiv.textContent = 'v6.0 · ' + (currentUser ? currentUser.name : '');
-    footer.appendChild(nameDiv);
-    var syncBtn = document.createElement('button');
-    syncBtn.className = 'btn btn-xs';
-    syncBtn.style = 'margin-top:8px;width:100%;justify-content:center';
-    syncBtn.textContent = 'Sincronizar';
-    syncBtn.onclick = loadFromAirtable;
-    footer.appendChild(syncBtn);
-    var outBtn = document.createElement('button');
-    outBtn.className = 'btn btn-xs';
-    outBtn.style = 'margin-top:4px;width:100%;justify-content:center;color:#9b2226';
-    outBtn.textContent = 'Sair';
-    outBtn.onclick = doLogout;
-    footer.appendChild(outBtn);
-  }
   var logNav = document.getElementById('nav-log');
   if (logNav) logNav.style.display = (currentUser && currentUser.isAdmin) ? '' : 'none';
 }
@@ -2894,28 +2867,28 @@ load();
 </div><!-- /app-shell -->
 
 <!-- SETUP SCREEN -->
-<div id="screen-setup" style="display:none;position:fixed;inset:0;z-index:9999;background:#f5f4f0;align-items:center;justify-content:center;font-family:-apple-system,sans-serif">
-  <div style="background:#fff;border:1px solid rgba(0,0,0,.12);border-radius:10px;padding:40px 36px;width:400px">
+<div id="screen-setup" style="display:none;position:fixed;inset:0;z-index:9999;background:#f5f4f0;align-items:center;justify-content:center">
+  <div style="background:#fff;border:1px solid rgba(0,0,0,.12);border-radius:10px;padding:40px 36px;width:400px;font-family:-apple-system,sans-serif">
     <div style="font-size:11px;letter-spacing:.1em;color:#9e9e94;text-transform:uppercase;margin-bottom:6px">Configuração inicial</div>
     <div style="font-size:20px;font-weight:500;margin-bottom:4px">Conectar ao Airtable</div>
     <div style="font-size:13px;color:#9e9e94;margin-bottom:24px">Feito uma única vez por dispositivo</div>
     <div style="margin-bottom:12px">
       <label style="font-size:12px;color:#6b6b62;display:block;margin-bottom:5px">Personal Access Token</label>
-      <input id="s-token" type="password" placeholder="patXXXXXX..." style="width:100%;padding:8px 11px;border:1px solid rgba(0,0,0,.15);border-radius:6px;font-size:13px;box-sizing:border-box">
+      <input id="s-token" type="password" placeholder="patXXXXXX..." style="width:100%;padding:8px 11px;border:1px solid rgba(0,0,0,.15);border-radius:6px;font-size:12px;box-sizing:border-box;font-family:monospace">
     </div>
     <div style="margin-bottom:20px">
       <label style="font-size:12px;color:#6b6b62;display:block;margin-bottom:5px">Base ID</label>
-      <input id="s-base" placeholder="appXXXXXX..." style="width:100%;padding:8px 11px;border:1px solid rgba(0,0,0,.15);border-radius:6px;font-size:13px;box-sizing:border-box">
+      <input id="s-base" placeholder="appXXXXXX..." style="width:100%;padding:8px 11px;border:1px solid rgba(0,0,0,.15);border-radius:6px;font-size:12px;box-sizing:border-box;font-family:monospace">
     </div>
     <div id="s-err" style="color:#9b2226;font-size:12px;margin-bottom:10px;display:none"></div>
     <button id="s-btn" onclick="authSetup()" style="width:100%;padding:10px;background:#1a1a18;color:#fff;border:none;border-radius:6px;font-size:14px;cursor:pointer">Conectar e salvar</button>
-    <div style="font-size:11px;color:#9e9e94;margin-top:14px;line-height:1.8">Token: airtable.com/create/tokens<br>Base ID: trecho "appXXXX" da URL do Airtable</div>
+    <div style="font-size:11px;color:#9e9e94;margin-top:14px;line-height:1.8">Token: airtable.com/create/tokens &nbsp;·&nbsp; Base ID: trecho "appXXXX" da URL</div>
   </div>
 </div>
 
 <!-- LOGIN SCREEN -->
-<div id="screen-login" style="display:none;position:fixed;inset:0;z-index:9998;background:#f5f4f0;align-items:center;justify-content:center;font-family:-apple-system,sans-serif">
-  <div style="background:#fff;border:1px solid rgba(0,0,0,.12);border-radius:10px;padding:40px 36px;width:340px;text-align:center">
+<div id="screen-login" style="display:none;position:fixed;inset:0;z-index:9998;background:#f5f4f0;align-items:center;justify-content:center">
+  <div style="background:#fff;border:1px solid rgba(0,0,0,.12);border-radius:10px;padding:40px 36px;width:340px;font-family:-apple-system,sans-serif;text-align:center">
     <div style="font-size:11px;letter-spacing:.1em;color:#9e9e94;text-transform:uppercase;margin-bottom:6px">Consultoria</div>
     <div style="font-size:22px;font-weight:500;margin-bottom:4px">Gestão de Horas</div>
     <div style="font-size:13px;color:#9e9e94;margin-bottom:28px">Identificação de acesso</div>
@@ -2929,44 +2902,34 @@ load();
       <label style="font-size:12px;color:#6b6b62;display:block;margin-bottom:5px">PIN (4 dígitos)</label>
       <input id="l-pin" type="password" maxlength="4" inputmode="numeric" placeholder="••••" style="width:100%;padding:8px 11px;border:1px solid rgba(0,0,0,.15);border-radius:6px;font-size:20px;letter-spacing:.3em;text-align:center;box-sizing:border-box">
     </div>
-    <div id="l-err" style="color:#9b2226;font-size:12px;margin-bottom:10px;display:none">PIN incorreto.</div>
+    <div id="l-err" style="color:#9b2226;font-size:12px;margin-bottom:10px;display:none"></div>
     <button onclick="authLogin()" style="width:100%;padding:10px;background:#1a1a18;color:#fff;border:none;border-radius:6px;font-size:14px;cursor:pointer">Entrar</button>
     <div style="font-size:11px;color:#9e9e94;margin-top:14px">Esqueceu o PIN? Fale com o administrador.</div>
   </div>
 </div>
 
 <script>
-// BOOT: runs after full page load, decides what to show
 window.addEventListener('DOMContentLoaded', function() {
   var token = localStorage.getItem('gh_at_token');
   var base  = localStorage.getItem('gh_at_base');
   var sess  = sessionStorage.getItem('gh_user');
 
   if (!token || !base) {
-    // First time: show setup
     document.getElementById('screen-setup').style.display = 'flex';
     return;
   }
-
   if (sess) {
-    // Already logged in: init the app
     var user = JSON.parse(sess);
     if (typeof currentUser !== 'undefined') currentUser = user;
     if (typeof initApp === 'function') initApp();
     return;
   }
-
-  // Has token but no session: show login
+  // Load consultants for login
   var sel = document.getElementById('l-user');
   sel.innerHTML = '<option value="">Selecione seu nome...</option>';
-  
-  fetch('https://api.airtable.com/v0/' + base + '/Consultores?fields[]=Nome&fields[]=PIN&fields[]=Admin', {
-    headers: { 'Authorization': 'Bearer ' + token }
-  })
-  .then(function(r) { return r.json(); })
-  .then(function(data) {
+  function populateLogin(records) {
     sel.innerHTML = '<option value="">Selecione seu nome...</option>';
-    (data.records || []).forEach(function(r) {
+    records.forEach(function(r) {
       var o = document.createElement('option');
       o.value = r.id;
       o.dataset.pin   = String(r.fields.PIN || '');
@@ -2975,24 +2938,18 @@ window.addEventListener('DOMContentLoaded', function() {
       o.textContent   = r.fields.Nome || r.id;
       sel.appendChild(o);
     });
-    localStorage.setItem('_cons_cache', JSON.stringify(data.records || []));
-  })
-  .catch(function() {
-    var cache = localStorage.getItem('_cons_cache');
-    if (cache) {
-      sel.innerHTML = '<option value="">Selecione seu nome...</option>';
-      JSON.parse(cache).forEach(function(r) {
-        var o = document.createElement('option');
-        o.value = r.id;
-        o.dataset.pin   = String(r.fields.PIN || '');
-        o.dataset.admin = r.fields.Admin ? '1' : '0';
-        o.dataset.name  = r.fields.Nome || '';
-        o.textContent   = r.fields.Nome || r.id;
-        sel.appendChild(o);
-      });
-    }
-  });
-
+  }
+  fetch('https://api.airtable.com/v0/' + base + '/Consultores?fields[]=Nome&fields[]=PIN&fields[]=Admin', {
+    headers: { 'Authorization': 'Bearer ' + token }
+  }).then(function(r) { return r.json(); })
+    .then(function(d) {
+      populateLogin(d.records || []);
+      localStorage.setItem('_cons_cache', JSON.stringify(d.records || []));
+    })
+    .catch(function() {
+      var c = localStorage.getItem('_cons_cache');
+      if (c) populateLogin(JSON.parse(c));
+    });
   document.getElementById('l-pin').addEventListener('keydown', function(e) {
     if (e.key === 'Enter') authLogin();
   });
@@ -3005,19 +2962,17 @@ function authSetup() {
   var err   = document.getElementById('s-err');
   var btn   = document.getElementById('s-btn');
   if (!token || !base) { err.style.display='block'; err.textContent='Preencha os dois campos.'; return; }
-  err.style.display = 'none'; btn.textContent = 'Testando...'; btn.disabled = true;
+  err.style.display='none'; btn.textContent='Testando...'; btn.disabled=true;
   fetch('https://api.airtable.com/v0/' + base + '/Consultores?pageSize=1', {
     headers: { 'Authorization': 'Bearer ' + token }
-  })
-  .then(function(r) {
-    if (!r.ok) throw new Error('Erro ' + r.status + '. Verifique o token e Base ID.');
+  }).then(function(r) {
+    if (!r.ok) throw new Error('Erro '+r.status+'. Verifique token e Base ID.');
     localStorage.setItem('gh_at_token', token);
     localStorage.setItem('gh_at_base', base);
     location.reload();
-  })
-  .catch(function(e) {
-    btn.textContent = 'Conectar e salvar'; btn.disabled = false;
-    err.style.display='block'; err.textContent = e.message;
+  }).catch(function(e) {
+    btn.textContent='Conectar e salvar'; btn.disabled=false;
+    err.style.display='block'; err.textContent=e.message;
   });
 }
 
@@ -3026,15 +2981,12 @@ function authLogin() {
   var pin = document.getElementById('l-pin').value.trim();
   var opt = sel.options[sel.selectedIndex];
   var err = document.getElementById('l-err');
-  if (!opt || !opt.value) { err.style.display='block'; err.textContent='Selecione seu nome.'; return; }
-  if (pin !== opt.dataset.pin) { err.style.display='block'; err.textContent='PIN incorreto. Tente novamente.'; return; }
-  err.style.display = 'none';
-  sessionStorage.setItem('gh_user', JSON.stringify({
-    id: opt.value, name: opt.dataset.name, isAdmin: opt.dataset.admin === '1'
-  }));
+  if (!opt||!opt.value) { err.style.display='block'; err.textContent='Selecione seu nome.'; return; }
+  if (pin !== String(opt.dataset.pin)) { err.style.display='block'; err.textContent='PIN incorreto.'; return; }
+  err.style.display='none';
+  sessionStorage.setItem('gh_user', JSON.stringify({ id:opt.value, name:opt.dataset.name, isAdmin:opt.dataset.admin==='1' }));
   location.reload();
 }
 </script>
-
 </body>
 </html>
