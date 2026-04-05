@@ -611,7 +611,14 @@ tr.task-row:hover td{background:var(--surface2)}
 </div>
 
 <script>
-// ─── CONSTANTS ────────────────────────────────────────────────────────────────
+// ─── CONSTANTS ─────────────────────────────────────────────────────────────
+// Session ID for audit log (stable per browser session)
+const SESSION_KEY = "gh_session_id";
+let ghSessionId = sessionStorage.getItem(SESSION_KEY);
+if (!ghSessionId) {
+  ghSessionId = crypto.randomUUID();
+  sessionStorage.setItem(SESSION_KEY, ghSessionId);
+}───
 const MONTHS=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
 const TODAY=new Date(); TODAY.setHours(0,0,0,0);
 const PROJ_COLORS=['#3b82f6','#10b981','#f59e0b','#8b5cf6','#ef4444','#06b6d4','#f97316','#84cc16'];
@@ -671,7 +678,7 @@ async function writeLog(acao, tabela, registro, campo, valAnt, valNovo) {
       "Campo Alterado": String(campo||""),
       "Valor Anterior": JSON.stringify(valAnt != null ? valAnt : ""),
       "Valor Novo":     JSON.stringify(valNovo != null ? valNovo : ""),
-      "IP Sessao":      String(currentUser ? currentUser.id : "anon")
+      "IP Sessao":      ghSessionId
     });
   } catch(e) { console.warn("Log error:", e.message); }
 }
