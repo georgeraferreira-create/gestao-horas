@@ -1091,46 +1091,7 @@ async function atSaveConsultant(cons) {
   } catch(e) { console.warn('atSaveConsultant error:', e); }
 }
 
-async function atSaveTask(task) {
-  // Build fields — Projeto and Consultor are plain text in this Airtable setup
-  var proj = db.projects.find(function(p){return p.id===task.projectId;});
-  var cons = db.consultants.find(function(c){return c.id===task.consultantId;});
-  var actPai = task.level==='task' && task.parentId ? db.tasks.find(function(t){return t.id===task.parentId;}) : null;
-  var tarPai = task.level==='subtask' && task.parentId ? db.tasks.find(function(t){return t.id===task.parentId;}) : null;
 
-  // Map level back to Portuguese for Airtable
-  var levelMap = {activity:'atividade', task:'tarefa', subtask:'subtarefa'};
-
-  var fields = {
-    "Nome":              task.name||"",
-    "Nivel":             levelMap[task.level]||task.level,
-    "Horas Planejadas":  Number(task.hours||0),
-    "Horas Realizadas":  Number(task.realized||0),
-    "Status":            task.status||"todo",
-    "Data Inicio":       task.startDate||null,
-    "Data Fim":          task.endDate||null,
-    "Nota":              task.note||"",
-    "Ordem":             Number(task.order||0)
-  };
-  // Link projeto and consultor by name (text field in Airtable)
-  if (proj) fields["Projeto"] = proj.name;
-  if (cons) fields["Consultor"] = cons.name;
-  if (actPai && task.level==='task') fields["Atividade Pai"] = actPai.name;
-  if (tarPai && task.level==='subtask') fields["Tarefa Pai"] = tarPai.name;
-
-  try {
-    if (task._atId && task._atId.startsWith('rec')) {
-      await atUpdate(AT_TABLES.tasks, task._atId, fields);
-    } else {
-      var res = await atCreate(AT_TABLES.tasks, fields);
-      if (res.records && res.records[0]) {
-        task._atId = res.records[0].id;
-        task.id    = res.records[0].id;
-      }
-    }
-    await writeLog('Salvou tarefa', 'Tarefas', task.name, '', '', '');
-  } catch(e) { console.warn('atSaveTask error:', e); }
-}
 
 async function atDeleteTask(atId) {
   if (!atId || !atId.startsWith('rec')) return;
