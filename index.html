@@ -1014,7 +1014,7 @@ async function atSaveTask(task) {
   if (task.level !== 'activity') fields["Status"] = safeStatus;
   if (task.startDate) fields["Data Inicio"] = task.startDate;
   if (task.endDate)   fields["Data Fim"]    = task.endDate;
-  // Linked record fields — send as array of Airtable record IDs
+  // Linked record fields — send as array of IDs (pai always exists before child)
   if (proj && proj._atId && proj._atId.startsWith('rec')) fields["Projeto"]   = [proj._atId];
   if (cons && cons._atId && cons._atId.startsWith('rec')) fields["Consultor"] = [cons._atId];
   if (pai  && pai._atId  && pai._atId.startsWith('rec'))  fields["Pai"]        = [pai._atId];
@@ -1429,7 +1429,10 @@ function renderProjectCard(p, filterConsultId, selCons){
   const col=pct>=85?'#ef4444':pct>=60?'#f59e0b':'#3b82f6';
 
   // When filterConsultId is set, only show activities that contain tasks for that consultant
-  const allActivities=db.tasks.filter(t=>t.projectId===p.id&&t.level==='activity').sort((a,b)=>(a.order||0)-(b.order||0));
+  const allActivities=db.tasks.filter(t=>t.projectId===p.id&&t.level==='activity').sort((a,b)=>{
+      if(a.startDate&&b.startDate) return a.startDate.localeCompare(b.startDate);
+      return (a.order||0)-(b.order||0); // fallback to order if no date
+    });
   const activities=filterConsultId&&filterConsultId!=='unassigned'
     ?allActivities.filter(act=>db.tasks.some(t=>t.projectId===p.id&&t.parentId===act.id&&t.consultantId===filterConsultId))
     :filterConsultId==='unassigned'
@@ -1455,7 +1458,10 @@ function renderProjectCard(p, filterConsultId, selCons){
 
     activities.forEach(act=>{
       const isCollapsed=collapsedNodes.has(act.id);
-      const allActTasks=db.tasks.filter(t=>t.projectId===p.id&&t.level==='task'&&t.parentId===act.id).sort((a,b)=>(a.order||0)-(b.order||0));
+      const allActTasks=db.tasks.filter(t=>t.projectId===p.id&&t.level==='task'&&t.parentId===act.id).sort((a,b)=>{
+          if(a.startDate&&b.startDate) return a.startDate.localeCompare(b.startDate);
+          return (a.order||0)-(b.order||0);
+        });
       const actTasks=filterConsultId&&filterConsultId!=='unassigned'
         ?allActTasks.filter(t=>t.consultantId===filterConsultId||db.tasks.some(s=>s.parentId===t.id&&s.consultantId===filterConsultId))
         :filterConsultId==='unassigned'
@@ -1644,7 +1650,16 @@ function openModal(type, a, b, c, d){
         order:db.tasks.filter(t=>t.projectId===projId&&t.level===level&&t.parentId===parentId).length
       };
       db.tasks.push(newTask);
-      save();atSaveTask(newTask);renderAll();closeModal();
+      save();
+      // Validate parent has Airtable ID before saving
+      if (newTask.level !== 'activity' && newTask.parentId) {
+        var parentTask = db.tasks.find(function(t){return t.id===newTask.parentId;});
+        if (!parentTask || !parentTask._atId || !parentTask._atId.startsWith('rec')) {
+          alert('Atividade pai ainda não foi sincronizada com o Airtable. Clique em Sincronizar primeiro.');
+          renderAll();closeModal();return;
+        }
+      }
+      atSaveTask(newTask);renderAll();closeModal();
     };
   }
 
