@@ -1001,17 +1001,25 @@ async function atSaveTask(task) {
   var cons = db.consultants.find(function(c){return c.id===task.consultantId;});
   var pai  = task.parentId ? db.tasks.find(function(t){return t.id===task.parentId;}) : null;
   var lvlMap = {activity:'atividade',task:'tarefa',subtask:'subtarefa'};
+  var validStatus = ['todo','doing','done','blocked'];
+  var safeStatus = validStatus.indexOf(task.status) >= 0 ? task.status : 'todo';
   var fields = {
     "Nome":task.name||"","Nivel":lvlMap[task.level]||task.level,
     "Horas Planejadas":Number(task.hours||0),"Horas Realizadas":Number(task.realized||0),
-    "Status":task.status||"todo","Nota":task.note||"","Ordem":Number(task.order||0)
+    "Nota":task.note||"","Ordem":Number(task.order||0)
   };
+  if (task.level !== 'activity') fields["Status"] = safeStatus;
   if (task.startDate) fields["Data Inicio"] = task.startDate;
   if (task.endDate)   fields["Data Fim"]    = task.endDate;
-  if (proj) fields["Projeto"]   = proj.name;
-  if (cons) fields["Consultor"] = cons.name;
-  if (pai && task.level==='task')    fields["Atividade Pai"] = pai.name;
-  if (pai && task.level==='subtask') fields["Tarefa Pai"]    = pai.name;
+  // Send as text (Airtable will match by name if fields are text, or use ID if linked)
+  if (proj) fields["Projeto"]   = proj._atId && proj._atId.startsWith('rec') ? [proj._atId] : proj.name;
+  if (cons) fields["Consultor"] = cons._atId && cons._atId.startsWith('rec') ? [cons._atId] : cons.name;
+  // Note: Atividade Pai and Tarefa Pai are linked record fields in Airtable
+  // Only set if pai has an Airtable record ID
+  if (pai && pai._atId && pai._atId.startsWith('rec')) {
+    if (task.level==='task')    fields["Atividade Pai"] = [pai._atId];
+    if (task.level==='subtask') fields["Tarefa Pai"]    = [pai._atId];
+  }
   try {
     if (task._atId && task._atId.startsWith('rec')) { await atUpdate(AT_TABLES.tasks, task._atId, fields); }
     else { var r=await atCreate(AT_TABLES.tasks,fields); if(r.records&&r.records[0]){task._atId=r.records[0].id;task.id=r.records[0].id;} }
@@ -1649,7 +1657,7 @@ function openModal(type, a, b, c, d){
     const levelLabels={activity:'Atividade',task:'Tarefa',subtask:'Subtarefa'};
     title.textContent='Editar '+levelLabels[t.level];
     const needsConsultant=t.level==='task'||t.level==='subtask';
-    const needsDates=t.level==='task'||t.level==='subtask';
+    const needsDates=true;  // all levels need dates and status
     const needsHours=t.level==='task'||t.level==='subtask';
 
     body.innerHTML=`
