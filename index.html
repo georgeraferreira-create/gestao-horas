@@ -171,10 +171,10 @@ tr.task-row:hover td{background:var(--surface2)}
 .gantt-wrap{overflow-x:auto}
 .gantt-tbl{border-collapse:collapse;font-size:12px}
 .gantt-tbl th{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;font-weight:500;padding:5px 4px;border-bottom:1px solid var(--border);background:var(--surface);text-align:center;border-left:1px solid var(--border);min-width:30px}
-.gantt-tbl th.g-label-th{text-align:left;border-left:none;min-width:200px;position:sticky;left:0;z-index:3;background:var(--surface)}
+.gantt-tbl th.g-label-th{text-align:left;border-left:none;min-width:260px;position:sticky;left:0;z-index:3;background:var(--surface)}
 .gantt-tbl th.g-today{background:rgba(59,130,246,.1);color:#3b82f6}
-.g-label-td{position:sticky;left:0;background:var(--surface);z-index:1;border-right:1px solid var(--border);min-width:200px;max-width:220px}
-.g-label-inner{padding:6px 10px;display:flex;align-items:center;gap:6px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.g-label-td{position:sticky;left:0;background:var(--surface);z-index:1;border-right:1px solid var(--border);min-width:260px;max-width:320px}
+.g-label-inner{padding:6px 10px;display:flex;align-items:center;gap:6px;cursor:pointer;white-space:normal;word-break:break-word;min-height:32px;line-height:1.4}
 .g-label-inner:hover{background:var(--surface2)}
 .g-act .g-label-td,.g-act td{background:var(--surface2)}
 .g-act .g-label-inner{font-weight:500}
@@ -275,10 +275,10 @@ tr.task-row:hover td{background:var(--surface2)}
 .gantt-wrap{overflow-x:auto}
 .gantt-tbl{border-collapse:collapse;font-size:12px}
 .gantt-tbl th{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;font-weight:500;padding:5px 4px;border-bottom:1px solid var(--border);background:var(--surface);text-align:center;border-left:1px solid var(--border);min-width:30px}
-.gantt-tbl th.g-label-th{text-align:left;border-left:none;min-width:200px;position:sticky;left:0;z-index:3;background:var(--surface)}
+.gantt-tbl th.g-label-th{text-align:left;border-left:none;min-width:260px;position:sticky;left:0;z-index:3;background:var(--surface)}
 .gantt-tbl th.g-today{background:rgba(59,130,246,.1);color:#3b82f6}
 .g-label-td{position:sticky;left:0;background:var(--surface);z-index:1;border-right:1px solid var(--border);min-width:200px;max-width:200px}
-.g-label-inner{padding:6px 10px;display:flex;align-items:center;gap:6px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.g-label-inner{padding:6px 10px;display:flex;align-items:center;gap:6px;cursor:pointer;white-space:normal;word-break:break-word;min-height:32px;line-height:1.4}
 .g-label-inner:hover{background:var(--surface2)}
 .g-act .g-label-td{background:var(--surface2)}
 .g-act td{background:var(--surface2)}
@@ -870,7 +870,7 @@ async function loadFromAirtable() {
 
     var consRecs = await atList(AT_TABLES.consultants);
     db.consultants = consRecs.map(function(r) {
-      return { id:r.id, _atId:r.id, name:r.fields["Nome"]||"", cargo:r.fields["Cargo"]||"", capacity:Number(r.fields["Capacidade Mensal (h)"]||160), pin:String(r.fields["PIN"]||""), isAdmin:!!r.fields["Admin"] };
+      return { id:r.id, _atId:r.id, name:r.fields["Nome"]||"", cargo:r.fields["Cargo"]||"", capacity:Number(r.fields["Capacidade Mensal (h)"]||160), pin:String(r.fields["PIN"]||""), isAdmin:r.fields["Admin"]===true||r.fields["Admin"]==="Sim"||r.fields["Admin"]==="Yes" };
     });
     localStorage.setItem("gh_consultants", JSON.stringify(db.consultants));
     localStorage.setItem("_cons_cache", JSON.stringify(consRecs));
@@ -988,10 +988,13 @@ async function atSaveProject(proj) {
 async function atSaveConsultant(cons) {
   var fields = {"Nome":cons.name||"","Cargo":cons.cargo||"","Capacidade Mensal (h)":Number(cons.capacity||160),"PIN":Number(cons.pin||0),"Admin":!!cons.isAdmin};
   try {
-    if (cons._atId && cons._atId.startsWith('rec')) { await atUpdate(AT_TABLES.consultants, cons._atId, fields); }
+    if (cons._atId && cons._atId.startsWith('rec')) { 
+      console.log('Updating consultant', cons._atId, fields);
+      await atUpdate(AT_TABLES.consultants, cons._atId, fields); 
+    }
     else { var r=await atCreate(AT_TABLES.consultants,fields); if(r.records&&r.records[0]){cons._atId=r.records[0].id;cons.id=r.records[0].id;} }
     writeLog('Salvou consultor','Consultores',cons.name,'','','');
-  } catch(e){console.warn('atSaveConsultant:',e);}
+  } catch(e){console.error('atSaveConsultant ERROR:',e, fields);}
 }
 
 async function atSaveTask(task) {
@@ -1029,9 +1032,12 @@ async function atSaveSprint(entry) {
   if (cons) fields["Consultor"] = cons.name;
   if (proj) fields["Projeto"]   = proj.name;
   try {
-    if (entry._atId && entry._atId.startsWith('rec')) { await atUpdate(AT_TABLES.sprints, entry._atId, fields); }
+    if (entry._atId && entry._atId.startsWith('rec')) { 
+      console.log('Updating sprint', entry._atId, 'hours:', fields['Horas']);
+      await atUpdate(AT_TABLES.sprints, entry._atId, fields); 
+    }
     else { var r=await atCreate(AT_TABLES.sprints,fields); if(r.records&&r.records[0]){entry._atId=r.records[0].id;entry.id=r.records[0].id;} }
-  } catch(e){console.warn('atSaveSprint:',e);}
+  } catch(e){console.error('atSaveSprint ERROR:',e);}
 }
 
 async function atDeleteRecord(table, atId) {
@@ -1346,16 +1352,15 @@ function renderProjetos(){
   // Filter consultants
   const visibleConsults=db.consultants.filter(c=>!selCons||c.id===selCons);
 
-  // Group by consultant perspective
-  if(!visibleConsults.length&&!selCons){
-    // No consultants yet — show flat project list
+  // When no consultant filter, show project-centric view (all activities visible)
+  if(!selCons){
     el.innerHTML=visibleProjs.map(p=>renderProjectCard(p,null,null)).join('');
     return;
   }
 
-  // Build consultant-grouped view
+  // Build consultant-grouped view (consultant filter active)
   let html='';
-  const consultantsToShow=selCons?visibleConsults:db.consultants;
+  const consultantsToShow=visibleConsults;
 
   consultantsToShow.forEach(c=>{
     // Find tasks for this consultant across visible projects
@@ -1604,7 +1609,7 @@ function openModal(type, a, b, c, d){
     title.textContent='Nova '+levelLabels[level];
 
     const needsConsultant=level==='task'||level==='subtask';
-    const needsDates=level==='task'||level==='subtask';
+    const needsDates=true; // activities also need dates
     const needsHours=level==='task'||level==='subtask';
 
     body.innerHTML=`
@@ -1698,12 +1703,16 @@ function openModal(type, a, b, c, d){
         <div class="form-group"><label class="form-label">Nome completo</label><input class="form-input" id="fc-nome" value="${escHtml(c?c.name:'')}" placeholder="Ex: George Souza"></div>
         <div class="form-group"><label class="form-label">Cargo</label><input class="form-input" id="fc-cargo" value="${escHtml(c?c.cargo||'':'')}" placeholder="Ex: Consultor Sênior"></div>
       </div>
-      <div class="form-group"><label class="form-label">Capacidade mensal (horas)</label><input class="form-input" id="fc-cap" type="number" value="${c?c.capacity:160}" min="1"></div>`;
+      <div class="form-grid">
+        <div class="form-group"><label class="form-label">Capacidade mensal (horas)</label><input class="form-input" id="fc-cap" type="number" value="${c?c.capacity:160}" min="1"></div>
+        <div class="form-group"><label class="form-label">PIN (4 dígitos)</label><input class="form-input" id="fc-pin" type="password" maxlength="4" inputmode="numeric" value="${c?c.pin||'':''}" placeholder="1234"></div>
+      </div>`;
     savebtn.onclick=()=>{
       const nome=document.getElementById('fc-nome').value.trim();
       if(!nome){alert('Informe o nome.');return;}
-      if(c){c.name=nome;c.cargo=document.getElementById('fc-cargo').value.trim();c.capacity=parseInt(document.getElementById('fc-cap').value)||160;}
-      else{var nc={id:uid(),_atId:'',name:nome,cargo:document.getElementById('fc-cargo').value.trim(),capacity:parseInt(document.getElementById('fc-cap').value)||160};db.consultants.push(nc);c=nc;}
+      var pinVal=document.getElementById('fc-pin')?document.getElementById('fc-pin').value.trim():(c?c.pin:'');
+      if(c){c.name=nome;c.cargo=document.getElementById('fc-cargo').value.trim();c.capacity=parseInt(document.getElementById('fc-cap').value)||160;if(pinVal)c.pin=pinVal;}
+      else{var nc={id:uid(),_atId:'',name:nome,cargo:document.getElementById('fc-cargo').value.trim(),capacity:parseInt(document.getElementById('fc-cap').value)||160,pin:pinVal,isAdmin:false};db.consultants.push(nc);c=nc;}
       save();atSaveConsultant(c);renderAll();closeModal();
     };
   }
@@ -1866,7 +1875,7 @@ function renderTimeline() {
 
   wrap.innerHTML = db.consultants.map(c => {
     const cap = c.capacity || 160;
-    const weeklyCapHrs = Math.round(cap / 4.33); // approx weekly from monthly cap
+    const weeklyCapHrs = Math.round(cap / 4); // weekly = monthly / 4
     return `<div class="card" style="margin-bottom:16px">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px">
         <div>
@@ -1896,7 +1905,7 @@ function renderTimeline() {
       if (!canvas) return;
 
       const cap = c.capacity || 160;
-      const weeklyCapHrs = Math.round(cap / 4.33);
+      const weeklyCapHrs = Math.round(cap / 4);
 
       // For each project, build a dataset of weekly hours for this consultant
       const datasets = activeProjs.map(p => {
@@ -2028,14 +2037,23 @@ function renderHeatmap(){
   if(capChartInst) capChartInst.destroy();
   capChartInst=new Chart(document.getElementById('cap-chart'),{
     type:'bar',
-    data:{labels:months.map(m=>m.label),datasets:[{label:'Horas livres',data:freePerMonth,backgroundColor:freePerMonth.map((_,i)=>i===0?'#3b82f6':'#6ee7b7'),borderRadius:4}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`${ctx.parsed.y}h disponíveis`}}},
+    data:{labels:months.map(m=>m.label),datasets:[{
+      label:hmMode==='hrs'?'Horas livres':'% ocupação',
+      data:hmMode==='hrs'?freePerMonth:months.map((_,mi)=>{const a=allMH.reduce((s,mh)=>s+(mh[mi]||0),0);return totalCap>0?Math.round(a/totalCap*100):0;}),
+      backgroundColor:(hmMode==='hrs'?freePerMonth:months.map((_,mi)=>{const a=allMH.reduce((s,mh)=>s+(mh[mi]||0),0);return totalCap>0?Math.round(a/totalCap*100):0;})).map((_,i)=>i===0?'#3b82f6':'#6ee7b7'),
+      borderRadius:4}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>hmMode==='hrs'?`${ctx.parsed.y}h disponíveis`:`${ctx.parsed.y}% ocupação`}}},
       scales:{x:{ticks:{font:{size:10},color:'#9e9e94',autoSkip:false,maxRotation:0},grid:{display:false}},y:{ticks:{font:{size:11},color:'#9e9e94',callback:v=>v+'h'},grid:{color:'rgba(0,0,0,.05)'},beginAtZero:true}}}
   });
   document.getElementById('btn-hrs').classList.toggle('active',hmMode==='hrs');
   document.getElementById('btn-pct').classList.toggle('active',hmMode==='pct');
 }
-function setHmMode(m){hmMode=m;renderHeatmap();}
+function setHmMode(m){
+  hmMode=m;
+  document.getElementById('btn-hrs').classList.toggle('active', m==='hrs');
+  document.getElementById('btn-pct').classList.toggle('active', m==='pct');
+  renderHeatmap();
+}
 
 // ─── RENDER ALERTAS ───────────────────────────────────────────────────────────
 function renderAlertas(){
@@ -2087,8 +2105,14 @@ function parseSheetDates(wb,sheetName){
     if(v&&String(v)!=='SEMANA'&&i>=2){firstDataCol=i;break;}
   }
   if(firstDataCol<0) firstDataCol=2;
+  // Count weeks: go to end of row, ignoring null gaps in middle
   let nWeeks=0;
-  for(let i=firstDataCol;i<row0.length;i++){if(row0[i]==null&&row1[i]==null)break;nWeeks++;}
+  let lastNonNull=firstDataCol;
+  for(let i=firstDataCol;i<row0.length;i++){
+    if(row0[i]!=null||row1[i]!=null||(dataRaw.slice(2).some(r=>r&&(r[i]||0)>0))) lastNonNull=i;
+  }
+  nWeeks=lastNonNull-firstDataCol+1;
+  if(nWeeks<=0) nWeeks=1;
   const weekDates=[];
   for(let wi=0;wi<nWeeks;wi++){
     let d;
@@ -2110,11 +2134,11 @@ function parseSheetDates(wb,sheetName){
     wHrs.forEach((h,i)=>{if(h>0){if(firstWi<0)firstWi=i;lastWi=i;}});
     const startDate=weekDates[firstWi]||weekDates[0];
     const endRaw=weekDates[lastWi]||weekDates[nWeeks-1];
-    const endDate=new Date(endRaw);endDate.setDate(endRaw.getDate()+6);
+    const endDate=new Date(endRaw); // Monday of last week with hours
     const weeklyData=wHrs.map((h,wi)=>({date:weekDates[wi].toISOString().slice(0,10),hours:h})).filter(w=>w.hours>0);
     tasks.push({
       atividade:colA||currentAtiv,tarefa:colB||'',
-      hours:Math.round(totalH),
+      hours:Math.round(totalH*10)/10,
       startDate:startDate.toISOString().slice(0,10),
       endDate:endDate.toISOString().slice(0,10),
       weeklyData
@@ -2225,7 +2249,19 @@ function applyImport(){
   log.textContent+=`✓ Importação concluída! ${Math.round(totalHrsAll)}h planejadas no projeto.\n`;
   document.getElementById('preview-card').style.display='none';
   importPreview=null;
-  save();renderAll();
+  save();
+  // Sync to Airtable
+  log.textContent+='Sincronizando com Airtable...\n';
+  atSaveProject(proj).then(function() {
+    var newTasks = db.tasks.filter(function(t){return t.projectId===proj.id;});
+    return Promise.all(newTasks.map(function(t){return atSaveTask(t);}));
+  }).then(function(){
+    log.textContent+='✓ Salvo no Airtable.\n';
+    renderAll();
+  }).catch(function(e){
+    log.textContent+='Aviso: erro ao salvar no Airtable: '+e.message+'\n';
+    renderAll();
+  });
 }
 
 function cancelImport(){document.getElementById('preview-card').style.display='none';importPreview=null;}
@@ -2328,7 +2364,7 @@ function renderCronograma() {
         <span style="font-size:12px;color:var(--text3)">${escHtml(p.name)}</span>
       </div>
       <div class="gantt-wrap">
-        <table class="gantt-tbl" style="width:${200+totalW}px">
+        <table class="gantt-tbl" style="width:${280+totalW}px">
           <thead><tr>
             <th class="g-label-th">Atividade / Tarefa</th>
             ${cols.map(c => `<th${c.isToday?' class="g-today"':''} style="width:${colW}px">${c.label}</th>`).join('')}
