@@ -49,7 +49,8 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:14
 .btn-danger:hover{background:var(--red-bg)}
 .btn-ghost{border-color:transparent;color:var(--text3)}
 .btn-ghost:hover{background:var(--surface2);color:var(--text);border-color:var(--border2)}
-.section{display:none}.section.active{display:block}
+.section{display:none}
+.section.active{display:block}
 .metrics-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:24px}
 .metric-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px 18px}
 .metric-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
@@ -77,7 +78,6 @@ td{padding:8px 10px;border-bottom:1px solid var(--border);color:var(--text);vert
 tr:last-child td{border-bottom:none}
 tr.task-row:hover td{background:var(--surface2)}
 .mono{font-family:var(--mono)}
-
 /* TASK TREE */
 .task-tree{width:100%}
 .task-tree table{table-layout:fixed}
@@ -93,7 +93,6 @@ tr.task-row:hover td{background:var(--surface2)}
 .collapsed .collapse-icon{transform:rotate(-90deg)}
 .task-hours-realized{width:52px;padding:2px 6px;border:1px solid var(--border2);border-radius:4px;font-size:12px;font-family:var(--mono);background:var(--surface);color:var(--text);text-align:center}
 .task-hours-realized:focus{outline:none;border-color:var(--text)}
-
 /* TIMELINE */
 .tl-wrap{overflow-x:auto}
 .tl-inner{min-width:700px}
@@ -106,7 +105,6 @@ tr.task-row:hover td{background:var(--surface2)}
 .tl-cell.free{background:var(--surface2)}
 .tl-tip{display:none;position:absolute;bottom:calc(100%+6px);left:50%;transform:translateX(-50%);background:var(--text);color:#fff;font-size:11px;padding:5px 9px;border-radius:4px;white-space:nowrap;z-index:10;pointer-events:none}
 .tl-cell:hover .tl-tip{display:block}
-
 /* HEATMAP */
 .hm-wrap{overflow-x:auto;padding-bottom:4px}
 .hm-inner{min-width:900px}
@@ -127,7 +125,6 @@ tr.task-row:hover td{background:var(--surface2)}
 .hm-mode-toggle button{font-size:11px;padding:4px 10px;border-radius:var(--r);border:1px solid var(--border2);background:var(--surface);color:var(--text2);cursor:pointer;font-family:var(--font)}
 .hm-mode-toggle button.active{background:var(--text);color:#fff;border-color:var(--text)}
 .hm-cell.cur-month{outline:2px solid var(--text);outline-offset:-2px}
-
 /* MINI HM in consultores */
 .mini-hm{display:flex;gap:4px;margin-top:8px;flex-wrap:wrap}
 .mini-cell{width:36px;height:36px;border-radius:4px;position:relative;flex-shrink:0;cursor:default;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px}
@@ -135,14 +132,12 @@ tr.task-row:hover td{background:var(--surface2)}
 .mini-cell-hrs{font-size:9px;opacity:.8}
 .mini-tip{display:none;position:absolute;bottom:calc(100%+5px);left:50%;transform:translateX(-50%);background:var(--text);color:#fff;font-size:10px;padding:4px 8px;border-radius:4px;white-space:nowrap;z-index:20;pointer-events:none}
 .mini-cell:hover .mini-tip{display:block}
-
 /* ALERTS */
 .alert-row{display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)}
 .alert-row:last-child{border-bottom:none}
 .alert-icon{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:500;flex-shrink:0;margin-top:1px}
 .alert-title{font-size:13px;font-weight:500;color:var(--text);margin-bottom:3px}
 .alert-desc{font-size:12px;color:var(--text2)}
-
 /* UPLOAD */
 .upload-zone{border:1.5px dashed var(--border2);border-radius:var(--r-lg);padding:36px;text-align:center;cursor:pointer;transition:background .15s;margin-bottom:16px}
 .upload-zone:hover,.upload-zone.dragover{background:var(--surface2)}
@@ -152,7 +147,6 @@ tr.task-row:hover td{background:var(--surface2)}
 .upload-spec{font-size:12px;color:var(--text3);line-height:1.8;background:var(--surface2);border-radius:var(--r);padding:14px 16px;text-align:left;display:inline-block;max-width:560px}
 .import-log{background:var(--surface2);border-radius:var(--r);padding:12px 14px;font-size:12px;color:var(--text2);margin-top:12px;max-height:200px;overflow-y:auto;font-family:var(--mono);line-height:1.8;display:none;white-space:pre-wrap}
 .import-log.visible{display:block}
-
 /* MODAL */
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:200;align-items:center;justify-content:center}
 .modal-overlay.open{display:flex}
@@ -168,83 +162,9 @@ tr.task-row:hover td{background:var(--surface2)}
 .empty{text-align:center;padding:48px;color:var(--text3)}
 .empty-title{font-size:15px;color:var(--text2);margin-bottom:6px;font-weight:500}
 .empty-sub{font-size:13px}
-.gantt-wrap{overflow-x:auto}
-.gantt-tbl{border-collapse:collapse;font-size:12px}
-.gantt-tbl th{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;font-weight:500;padding:5px 4px;border-bottom:1px solid var(--border);background:var(--surface);text-align:center;border-left:1px solid var(--border);min-width:30px}
-.gantt-tbl th.g-label-th{text-align:left;border-left:none;min-width:260px;position:sticky;left:0;z-index:3;background:var(--surface)}
-.gantt-tbl th.g-today{background:rgba(59,130,246,.1);color:#3b82f6}
 .g-label-td{position:sticky;left:0;background:var(--surface);z-index:1;border-right:1px solid var(--border);min-width:260px;max-width:320px}
-.g-label-inner{padding:6px 10px;display:flex;align-items:center;gap:6px;cursor:pointer;white-space:normal;word-break:break-word;min-height:32px;line-height:1.4}
-.g-label-inner:hover{background:var(--surface2)}
 .g-act .g-label-td,.g-act td{background:var(--surface2)}
-.g-act .g-label-inner{font-weight:500}
-.g-cell{border-left:1px solid var(--border);padding:2px 0;vertical-align:middle;position:relative}
-.g-cell.g-today{background:rgba(59,130,246,.05)}
-.g-bar-wrap{position:relative;height:22px}
-.g-bar{height:20px;border-radius:3px;position:absolute;top:1px;display:flex;align-items:center;padding:0 5px;font-size:10px;font-weight:500;color:#fff;white-space:nowrap;overflow:hidden;cursor:pointer;transition:opacity .15s;min-width:4px}
-.g-bar:hover{opacity:.82}
-.g-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;display:inline-block}
-.mtg-proj-block{margin-bottom:20px}
-.mtg-proj-hdr{display:flex;align-items:center;gap:10px;padding:10px 16px;border-radius:var(--r-lg) var(--r-lg) 0 0;border:1px solid var(--border);border-bottom:none;background:var(--surface2)}
-.mtg-tbl{width:100%;border-collapse:collapse;font-size:13px;background:var(--surface);border:1px solid var(--border);border-top:none;overflow:hidden}
-.mtg-tbl th{font-size:10px;color:var(--text3);font-weight:500;text-transform:uppercase;letter-spacing:.04em;padding:7px 12px;border-bottom:1px solid var(--border);text-align:left;white-space:nowrap}
-.mtg-tbl td{padding:8px 12px;border-bottom:0.5px solid var(--border);vertical-align:middle}
-.mtg-tbl tr:last-child td{border-bottom:none}
-.mtg-tbl tr:hover td{background:var(--surface2)}
-.mtg-l1 td:first-child{padding-left:26px;color:var(--text2)}
-.mtg-l2 td:first-child{padding-left:44px;color:var(--text3);font-size:12px}
-.mtg-act td{background:var(--surface2)!important;font-weight:500}
-.sbtn{border:1px solid var(--border2);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:500;cursor:pointer;background:var(--surface);font-family:var(--font);white-space:nowrap}
-.sbtn:hover{opacity:.8}
-.s-todo{color:var(--text3)}
-.s-doing{color:#1a4f8a;background:#dbeafe;border-color:#93c5fd}
-.s-done{color:#2d6a4f;background:#d8f3dc;border-color:#86efac}
-.s-block{color:#9b2226;background:#fde8e8;border-color:#fca5a5}
-.mnote{width:100%;border:1px solid transparent;border-radius:4px;padding:3px 5px;font-size:12px;font-family:var(--font);background:transparent;color:var(--text);resize:none;display:block;min-height:24px}
-.mnote:focus{outline:none;border-color:var(--border2);background:var(--surface)}
-.mnote::placeholder{color:var(--text3)}
-.mhrs{width:50px;padding:3px 5px;border:1px solid var(--border2);border-radius:4px;font-size:12px;font-family:var(--mono);background:var(--surface);color:var(--text);text-align:center}
-.mtg-date-inp{width:106px;padding:3px 5px;border:1px solid var(--border2);border-radius:4px;font-size:11px;font-family:var(--mono);background:var(--surface);color:var(--text)}
-.mtg-date-inp:focus{outline:none;border-color:var(--text)}
-.mtg-date-inp{width:108px;padding:3px 5px;border:1px solid var(--border2);border-radius:4px;font-size:11px;font-family:var(--mono);background:var(--surface);color:var(--text)}
-.mtg-date-inp:focus{outline:none;border-color:var(--text)}
-.mhrs:focus{outline:none;border-color:var(--text)}
-.wbadge{font-size:10px;padding:2px 7px;border-radius:10px;font-weight:500;margin-left:5px}
-.wb-past{background:var(--surface2);color:var(--text3)}
-.wb-cur{background:#dbeafe;color:#1a4f8a}
-.wb-next{background:#d8f3dc;color:#2d6a4f}
-.wb-fut{background:var(--surface2);color:var(--text2)}
-.sprint-inp{padding:3px 6px;border:1px solid var(--border2);border-radius:4px;font-size:12px;font-family:var(--font);background:var(--surface);color:var(--text);width:100%}
-.sprint-inp:focus{outline:none;border-color:var(--text)}
-.sprint-inp.confirmed{border-color:#86efac;background:#f0fdf4}
-.sprint-inp.ai-inferred{border-color:#93c5fd;background:#eff6ff}
-.sprint-hrs{width:52px;padding:3px 6px;border:1px solid var(--border2);border-radius:4px;font-size:12px;font-family:var(--mono);background:var(--surface);color:var(--text);text-align:center}
-.sprint-hrs:focus{outline:none;border-color:var(--text)}
-.sprint-tbl{width:100%;border-collapse:collapse;font-size:13px}
-.sprint-tbl th{font-size:10px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.05em;padding:8px 12px;border-bottom:1px solid var(--border);background:var(--surface);text-align:left;white-space:nowrap;position:sticky;top:0;z-index:2}
-.sprint-tbl td{padding:7px 12px;border-bottom:0.5px solid var(--border);vertical-align:middle}
-.sprint-tbl tr:last-child td{border-bottom:none}
-.sprint-tbl tr:hover td{background:var(--surface2)}
-.ai-badge{font-size:10px;padding:1px 6px;border-radius:10px;background:#eff6ff;color:#1a4f8a;border:1px solid #93c5fd;white-space:nowrap;display:inline-flex;align-items:center;gap:3px}
-.confirmed-badge{font-size:10px;padding:1px 6px;border-radius:10px;background:#f0fdf4;color:#2d6a4f;border:1px solid #86efac;white-space:nowrap}
-.infer-cell{display:flex;align-items:flex-start;gap:6px;position:relative;cursor:default;min-width:0}
 .infer-cell:hover .infer-tooltip,.infer-cell:focus .infer-tooltip{display:block}
-.infer-source-badge{font-size:10px;padding:1px 6px;border-radius:10px;background:#eff6ff;color:#1a4f8a;border:1px solid #93c5fd;white-space:nowrap;flex-shrink:0;line-height:1.6}
-.infer-text{font-size:12px;color:var(--text2);overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;line-height:1.4;min-width:0}
-.infer-tooltip{display:none;position:absolute;top:calc(100% + 4px);left:0;background:var(--text);color:#fff;font-size:12px;padding:8px 12px;border-radius:var(--r);white-space:pre-wrap;z-index:50;min-width:220px;max-width:340px;line-height:1.6;pointer-events:none}
-.sprint-note{width:100%;padding:4px 7px;border:1px solid var(--border2);border-radius:4px;font-size:12px;font-family:var(--font);background:var(--surface);color:var(--text);resize:vertical;min-height:50px;line-height:1.5}
-.sprint-note:focus{outline:none;border-color:var(--text)}
-.sprint-note::placeholder{color:var(--text3)}
-.sprint-total-row td{background:var(--surface2)!important;font-weight:600;border-top:1px solid var(--border)}
-.infer-cell{display:flex;align-items:flex-start;gap:6px;position:relative;cursor:default;min-width:0}
-.infer-cell:hover .infer-tooltip{display:block}
-.infer-cell:focus .infer-tooltip{display:block}
-.infer-source-badge{font-size:10px;padding:1px 6px;border-radius:10px;background:#eff6ff;color:#1a4f8a;border:1px solid #93c5fd;white-space:nowrap;flex-shrink:0;line-height:1.6}
-.infer-text{font-size:12px;color:var(--text2);overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;line-height:1.4;min-width:0}
-.infer-tooltip{display:none;position:absolute;top:calc(100% + 4px);left:0;background:var(--text);color:#fff;font-size:12px;padding:8px 12px;border-radius:var(--r);white-space:pre-wrap;z-index:50;min-width:220px;max-width:340px;line-height:1.6;box-shadow:0 4px 16px rgba(0,0,0,.2);pointer-events:none}
-.sprint-note{width:100%;padding:4px 7px;border:1px solid var(--border2);border-radius:4px;font-size:12px;font-family:var(--font);background:var(--surface);color:var(--text);resize:vertical;min-height:48px;line-height:1.5}
-.sprint-note:focus{outline:none;border-color:var(--text)}
-.sprint-note::placeholder{color:var(--text3)}
 .sprint-section-hdr{background:var(--surface2);font-weight:500;font-size:12px;padding:6px 12px;border-bottom:0.5px solid var(--border);color:var(--text2)}
 .sprint-inp{padding:3px 6px;border:1px solid var(--border2);border-radius:4px;font-size:12px;font-family:var(--font);background:var(--surface);color:var(--text);width:100%}
 .sprint-inp:focus{outline:none;border-color:var(--text)}
@@ -272,7 +192,6 @@ tr.task-row:hover td{background:var(--surface2)}
 ::-webkit-scrollbar{width:5px;height:5px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:10px}
-.gantt-wrap{overflow-x:auto}
 .gantt-tbl{border-collapse:collapse;font-size:12px}
 .gantt-tbl th{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;font-weight:500;padding:5px 4px;border-bottom:1px solid var(--border);background:var(--surface);text-align:center;border-left:1px solid var(--border);min-width:30px}
 .gantt-tbl th.g-label-th{text-align:left;border-left:none;min-width:260px;position:sticky;left:0;z-index:3;background:var(--surface)}
@@ -288,7 +207,6 @@ tr.task-row:hover td{background:var(--surface2)}
 .g-bar{height:20px;border-radius:3px;position:absolute;top:1px;display:flex;align-items:center;padding:0 5px;font-size:10px;font-weight:500;color:#fff;white-space:nowrap;overflow:hidden;cursor:pointer;transition:opacity .15s;min-width:4px;box-sizing:border-box}
 .g-bar:hover{opacity:.82}
 .g-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;display:inline-block}
-.mtg-proj-block{margin-bottom:20px}
 .mtg-proj-hdr{display:flex;align-items:center;gap:10px;padding:10px 16px;border-radius:var(--r-lg) var(--r-lg) 0 0;border:1px solid var(--border);border-bottom:none;background:var(--surface2)}
 .mtg-tbl{width:100%;border-collapse:collapse;font-size:13px;background:var(--surface);border:1px solid var(--border);border-top:none;border-radius:0 0 var(--r-lg) var(--r-lg);overflow:hidden}
 .mtg-tbl th{font-size:10px;color:var(--text3);font-weight:500;text-transform:uppercase;letter-spacing:.04em;padding:7px 12px;border-bottom:1px solid var(--border);background:var(--surface);text-align:left;white-space:nowrap}
@@ -297,7 +215,6 @@ tr.task-row:hover td{background:var(--surface2)}
 .mtg-tbl tr:hover td{background:var(--surface2)}
 .mtg-l1 td:first-child{padding-left:26px;color:var(--text2)}
 .mtg-l2 td:first-child{padding-left:44px;color:var(--text3);font-size:12px}
-.mtg-act td{background:var(--surface2)!important;font-weight:500}
 .sbtn{border:1px solid var(--border2);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:500;cursor:pointer;background:var(--surface);font-family:var(--font);white-space:nowrap}
 .sbtn:hover{opacity:.8}
 .s-todo{color:var(--text3)}
@@ -316,52 +233,9 @@ tr.task-row:hover td{background:var(--surface2)}
 .wb-cur{background:#dbeafe;color:#1a4f8a}
 .wb-next{background:#d8f3dc;color:#2d6a4f}
 .wb-fut{background:var(--surface2);color:var(--text2)}
-.gantt-wrap{overflow-x:auto;overflow-y:visible}
-.gantt-table{border-collapse:collapse;font-size:13px;table-layout:fixed}
-.gantt-table th{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;font-weight:500;padding:6px 8px;border-bottom:1px solid var(--border);background:var(--surface);white-space:nowrap;text-align:center;border-left:1px solid var(--border)}
-.gantt-table th:first-child{text-align:left;border-left:none;width:220px;position:sticky;left:0;z-index:2;background:var(--surface)}
-.gantt-table th.today-col{background:rgba(59,130,246,.08);color:#3b82f6}
-.gantt-label{position:sticky;left:0;background:var(--surface);z-index:1;border-right:1px solid var(--border);width:220px}
-.gantt-label-inner{padding:7px 10px;display:flex;align-items:center;gap:6px;cursor:pointer;min-height:36px}
-.gantt-label-inner:hover{background:var(--surface2)}
 .gantt-row-act .gantt-label{background:var(--surface2)}
-.gantt-row-act .gantt-label-inner{font-weight:500}
 .gantt-row-act td{background:var(--surface2)}
-.gantt-cell{border-left:1px solid var(--border);padding:2px 1px;vertical-align:middle;width:32px}
-.gantt-bar-wrap{position:relative;height:24px}
-.gantt-bar{height:22px;border-radius:4px;position:absolute;top:1px;display:flex;align-items:center;padding:0 6px;font-size:10px;font-weight:500;color:#fff;white-space:nowrap;overflow:hidden;cursor:pointer;transition:opacity .15s;min-width:6px}
-.gantt-bar:hover{opacity:.82}
 .gantt-today-col{background:rgba(59,130,246,.05)!important}
-.status-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;display:inline-block}
-.mtg-proj-block{margin-bottom:24px}
-.mtg-proj-header{display:flex;align-items:center;gap:10px;padding:10px 16px;border-radius:var(--r-lg) var(--r-lg) 0 0;border:1px solid var(--border);border-bottom:none;background:var(--surface2)}
-.mtg-proj-name{font-size:14px;font-weight:500}
-.mtg-proj-meta{font-size:12px;color:var(--text3)}
-.mtg-table{width:100%;border-collapse:collapse;font-size:13px;background:var(--surface);border:1px solid var(--border);border-radius:0 0 var(--r-lg) var(--r-lg);overflow:hidden}
-.mtg-table th{font-size:11px;color:var(--text3);font-weight:500;text-transform:uppercase;letter-spacing:.04em;padding:8px 12px;border-bottom:1px solid var(--border);background:var(--surface);text-align:left;white-space:nowrap}
-.mtg-table td{padding:9px 12px;border-bottom:0.5px solid var(--border);vertical-align:middle}
-.mtg-table tr:last-child td{border-bottom:none}
-.mtg-table tr:hover td{background:var(--surface2)}
-.mtg-lvl1 td:first-child{padding-left:28px;color:var(--text2)}
-.mtg-lvl2 td:first-child{padding-left:46px;color:var(--text3);font-size:12px}
-.mtg-act td{background:var(--surface2)!important;font-weight:500}
-.status-btn{border:1px solid var(--border2);border-radius:20px;padding:3px 11px;font-size:11px;font-weight:500;cursor:pointer;background:var(--surface);font-family:var(--font);white-space:nowrap;transition:all .15s}
-.status-btn:hover{opacity:.8}
-.status-todo{color:var(--text3);border-color:var(--border2)}
-.status-doing{color:#1a4f8a;background:#dbeafe;border-color:#93c5fd}
-.status-done{color:#2d6a4f;background:#d8f3dc;border-color:#86efac}
-.status-blocked{color:#9b2226;background:#fde8e8;border-color:#fca5a5}
-.mtg-note{width:100%;border:1px solid transparent;border-radius:4px;padding:3px 6px;font-size:12px;font-family:var(--font);background:transparent;color:var(--text);resize:none;min-height:26px;transition:border .15s;display:block}
-.mtg-note:focus{outline:none;border-color:var(--border2);background:var(--surface)}
-.mtg-note::placeholder{color:var(--text3)}
-.mtg-hrs-inp{width:52px;padding:3px 6px;border:1px solid var(--border2);border-radius:4px;font-size:12px;font-family:var(--mono);background:var(--surface);color:var(--text);text-align:center}
-.mtg-hrs-inp:focus{outline:none;border-color:var(--text)}
-.week-badge{font-size:10px;padding:2px 7px;border-radius:10px;font-weight:500;display:inline-block;white-space:nowrap;margin-left:6px}
-.week-past{background:var(--surface2);color:var(--text3)}
-.week-cur{background:#dbeafe;color:#1a4f8a}
-.week-next{background:#d8f3dc;color:#2d6a4f}
-.week-future{background:var(--surface2);color:var(--text2)}
-
 /* GANTT */
 .gantt-wrap{overflow-x:auto;overflow-y:visible}
 .gantt-table{border-collapse:collapse;font-size:13px}
@@ -378,7 +252,6 @@ tr.task-row:hover td{background:var(--surface2)}
 .gantt-bar:hover{opacity:.85}
 .gantt-today-line{position:absolute;top:0;bottom:0;width:2px;background:#3b82f6;opacity:.5;pointer-events:none;z-index:5}
 .status-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;display:inline-block}
-
 /* REUNIÃO */
 .mtg-proj-block{margin-bottom:24px}
 .mtg-proj-header{display:flex;align-items:center;gap:10px;padding:10px 16px;border-radius:var(--r-lg) var(--r-lg) 0 0;border:1px solid var(--border);border-bottom:none;background:var(--surface2)}
@@ -471,11 +344,7 @@ tr.task-row:hover td{background:var(--surface2)}
       <svg viewBox="0 0 16 16" fill="none"><path d="M3 4h10M3 8h7M3 12h5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
       Log de auditoria
     </button>
-    <button class="nav-item" id="nav-log" style="display:none" onclick="nav('log',this)">
-      <svg viewBox="0 0 16 16" fill="none"><path d="M3 4h10M3 8h7M3 12h5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
-      Log de auditoria
-    </button>
-  <div class="sidebar-footer">v6.0 · dados locais</div>
+      <div class="sidebar-footer">v6.0 · dados locais</div>
 </nav>
 
 <main class="main">
@@ -578,52 +447,6 @@ tr.task-row:hover td{background:var(--surface2)}
     <div><div class="page-title">Alertas</div><div class="page-sub">Projetos e consultores que precisam de atenção</div></div>
   </div>
   <div class="card"><div id="alert-list"></div></div>
-</div>
-
-<!-- CRONOGRAMA -->
-<div id="sec-cronograma" class="section">
-  <div class="page-header">
-    <div><div class="page-title">Cronograma</div><div class="page-sub">Gantt por projeto — clique numa tarefa para editar</div></div>
-    <div class="header-actions">
-      <select id="gnt-proj-sel" class="form-input" style="font-size:13px;min-width:200px" onchange="renderCronograma()">
-        <option value="">Todos os projetos</option>
-      </select>
-      <select id="gnt-zoom" class="form-input" style="font-size:13px;width:100px" onchange="renderCronograma()">
-        <option value="week">Semanas</option>
-        <option value="month" selected>Meses</option>
-      </select>
-    </div>
-  </div>
-  <div id="gantt-wrap"></div>
-</div>
-
-<!-- REUNIÃO -->
-<div id="sec-reuniao" class="section">
-  <div class="page-header">
-    <div><div class="page-title">Reunião</div><div class="page-sub">Visão de trabalho — atualize ao vivo durante a reunião</div></div>
-    <div class="header-actions" style="align-items:center;gap:10px;flex-wrap:wrap">
-      <select id="mtg-proj-sel" class="form-input" style="font-size:13px;min-width:180px" onchange="renderReuniao()">
-        <option value="">Todos os projetos</option>
-      </select>
-      <div style="display:flex;align-items:center;gap:6px">
-        <label style="font-size:13px;color:var(--text2);white-space:nowrap">Janela:</label>
-        <select id="mtg-before" class="form-input" style="font-size:13px;width:110px" onchange="renderReuniao()">
-          <option value="1">1 sem. antes</option>
-          <option value="2" selected>2 sem. antes</option>
-          <option value="4">4 sem. antes</option>
-        </select>
-        <span style="color:var(--text3);font-size:13px">+</span>
-        <select id="mtg-after" class="form-input" style="font-size:13px;width:120px" onchange="renderReuniao()">
-          <option value="2">2 sem. à frente</option>
-          <option value="3" selected>3 sem. à frente</option>
-          <option value="4">4 sem. à frente</option>
-          <option value="6">6 sem. à frente</option>
-          <option value="8">8 sem. à frente</option>
-        </select>
-      </div>
-    </div>
-  </div>
-  <div id="reuniao-wrap"></div>
 </div>
 
 <!-- CRONOGRAMA -->
@@ -838,16 +661,19 @@ async function atDelete(table, recordId) {
 }
 
 async function writeLog(acao, tabela, registro, campo, valAnt, valNovo) {
-  campo = campo||""; valAnt = valAnt||""; valNovo = valNovo||"";
   try {
     await atCreate(AT_TABLES.log, {
-      "Data Hora": new Date().toISOString().replace("T"," ").slice(0,19),
-      "Usuario": currentUser ? currentUser.name : "Sistema",
-      "Acao": acao, "Tabela": tabela, "Registro": String(registro),
-      "Campo Alterado": campo, "Valor Anterior": String(valAnt),
-      "Valor Novo": String(valNovo), "IP Sessao": "sessao-" + (currentUser ? currentUser.id : "anon")
+      "Data Hora":      new Date().toISOString(),
+      "Usuario":        String(currentUser ? currentUser.name : "Sistema"),
+      "Acao":           String(acao||""),
+      "Tabela":         String(tabela||""),
+      "Registro":       String(registro||""),
+      "Campo Alterado": String(campo||""),
+      "Valor Anterior": JSON.stringify(valAnt != null ? valAnt : ""),
+      "Valor Novo":     JSON.stringify(valNovo != null ? valNovo : ""),
+      "IP Sessao":      String(currentUser ? currentUser.id : "anon")
     });
-  } catch(e) { console.warn("Log error:", e); }
+  } catch(e) { console.warn("Log error:", e.message); }
 }
 
 
@@ -914,7 +740,8 @@ async function loadFromAirtable() {
         startDate:    f["Data Inicio"]||"",
         endDate:      f["Data Fim"]||"",
         note:         f["Nota"]||"",
-        order:        0,
+        uid:          f["UID"]||"",
+        order:        Number(f["Ordem"]||0),
         weeklyData:   []
       };
     });
@@ -970,29 +797,6 @@ let collapsedNodes=new Set(); // ids of collapsed activity/task rows
 function save(){try{localStorage.setItem('gh_v4',JSON.stringify({db,collapsed:[...collapsedNodes]}));}catch(e){}}
 
 // ── Airtable write helpers ────────────────────────────────────────────────────
-async function atSaveProject(proj) {
-  var fields = {"Nome":proj.name||"","Cliente":proj.client||""};
-  if (proj.start) fields["Start"] = proj.start;
-  if (proj.deadline) fields["Prazo"] = proj.deadline;
-  try {
-    if (proj._atId && proj._atId.startsWith('rec')) { await atUpdate(AT_TABLES.projects, proj._atId, fields); }
-    else { var r=await atCreate(AT_TABLES.projects,fields); if(r.records&&r.records[0]){proj._atId=r.records[0].id;proj.id=r.records[0].id;} }
-    writeLog('Salvou projeto','Projetos',proj.name,'','','');
-  } catch(e){console.warn('atSaveProject:',e);}
-}
-
-async function atSaveConsultant(cons) {
-  var fields = {"Nome":cons.name||"","Cargo":cons.cargo||"","Capacidade Mensal (h)":Number(cons.capacity||160),"PIN":Number(cons.pin||0),"Admin":!!cons.isAdmin};
-  try {
-    if (cons._atId && cons._atId.startsWith('rec')) { 
-      console.log('Updating consultant', cons._atId, fields);
-      await atUpdate(AT_TABLES.consultants, cons._atId, fields); 
-    }
-    else { var r=await atCreate(AT_TABLES.consultants,fields); if(r.records&&r.records[0]){cons._atId=r.records[0].id;cons.id=r.records[0].id;} }
-    writeLog('Salvou consultor','Consultores',cons.name,'','','');
-  } catch(e){console.error('atSaveConsultant ERROR:',e, fields);}
-}
-
 async function atSaveTask(task) {
   var proj = db.projects.find(function(p){return p.id===task.projectId;});
   var cons = db.consultants.find(function(c){return c.id===task.consultantId;});
@@ -1000,12 +804,16 @@ async function atSaveTask(task) {
   var lvlMap = {activity:'atividade',task:'tarefa',subtask:'subtarefa'};
   var validStatus = ['todo','doing','done','blocked'];
   var safeStatus = validStatus.indexOf(task.status) >= 0 ? task.status : 'todo';
+  // Generate UID if not present
+  if (!task.uid) task.uid = crypto.randomUUID();
   var fields = {
     "Nome":      task.name||"",
     "Nivel":     lvlMap[task.level]||task.level,
     "Horas Planejadas": Number(task.hours||0),
     "Horas Realizadas": Number(task.realized||0),
-    "Nota":      task.note||""
+    "Nota":      task.note||"",
+    "UID":       task.uid,
+    "Ordem":     Number(task.order||0)
   };
   if (task.level !== 'activity') fields["Status"] = safeStatus;
   if (task.startDate) fields["Data Inicio"] = task.startDate;
@@ -1016,36 +824,10 @@ async function atSaveTask(task) {
   if (pai  && pai._atId  && pai._atId.startsWith('rec'))  fields["Pai"]        = [pai._atId];
   try {
     if (task._atId && task._atId.startsWith('rec')) { await atUpdate(AT_TABLES.tasks, task._atId, fields); }
-    else { var r=await atCreate(AT_TABLES.tasks,fields); if(r.records&&r.records[0]){task._atId=r.records[0].id;task.id=r.records[0].id;} }
+    else { var r=await atCreate(AT_TABLES.tasks,fields); if(r.records&&r.records[0]){task._atId=r.records[0].id;} /* keep task.id as stable local id */ }
     writeLog('Salvou tarefa','Tarefas',task.name,'','','');
   } catch(e){console.warn('atSaveTask:',e);}
 }
-
-async function atSaveSprint(entry) {
-  var cons = db.consultants.find(function(c){return c.id===entry.consultantId;});
-  var proj = db.projects.find(function(p){return p.id===entry.projectId;});
-  var fields = {
-    "Etapa":entry.stage||"","Horas":Number(entry.hours||0),
-    "Tarefa Origem":entry.taskOrigin||"","Inferido por IA":!!entry.aiInferred,
-    "Confirmado":!!entry.confirmed,"Nota":entry.note||""
-  };
-  if (entry.weekStart) fields["Semana (segunda-feira)"] = entry.weekStart;
-  if (cons) fields["Consultor"] = cons.name;
-  if (proj) fields["Projeto"]   = proj.name;
-  try {
-    if (entry._atId && entry._atId.startsWith('rec')) { 
-      console.log('Updating sprint', entry._atId, 'hours:', fields['Horas']);
-      await atUpdate(AT_TABLES.sprints, entry._atId, fields); 
-    }
-    else { var r=await atCreate(AT_TABLES.sprints,fields); if(r.records&&r.records[0]){entry._atId=r.records[0].id;entry.id=r.records[0].id;} }
-  } catch(e){console.error('atSaveSprint ERROR:',e);}
-}
-
-async function atDeleteRecord(table, atId) {
-  if (!atId||!atId.startsWith('rec')) return;
-  try { await atDelete(table, atId); } catch(e){console.warn('atDeleteRecord:',e);}
-}
-
 
 // ── Airtable write helpers ────────────────────────────────────────────────────
 async function atSaveProject(proj) {
@@ -1061,8 +843,7 @@ async function atSaveProject(proj) {
     } else {
       var res = await atCreate(AT_TABLES.projects, fields);
       if (res.records && res.records[0]) {
-        proj._atId = res.records[0].id;
-        proj.id    = res.records[0].id;
+        proj._atId = res.records[0].id; // keep proj.id as stable local id
       }
     }
     await writeLog('Salvou projeto', 'Projetos', proj.name, '', '', '');
@@ -1083,8 +864,7 @@ async function atSaveConsultant(cons) {
     } else {
       var res = await atCreate(AT_TABLES.consultants, fields);
       if (res.records && res.records[0]) {
-        cons._atId = res.records[0].id;
-        cons.id    = res.records[0].id;
+        cons._atId = res.records[0].id; // keep cons.id as stable local id
       }
     }
     await writeLog('Salvou consultor', 'Consultores', cons.name, '', '', '');
@@ -1093,43 +873,29 @@ async function atSaveConsultant(cons) {
 
 
 
-async function atDeleteTask(atId) {
-  if (!atId || !atId.startsWith('rec')) return;
-  try { await atDelete(AT_TABLES.tasks, atId); } catch(e) { console.warn('atDeleteTask error:', e); }
-}
-
 async function atSaveSprint(entry) {
-  var cons = db.consultants.find(function(c){return c.id===entry.consultantId;});
-  var proj = db.projects.find(function(p){return p.id===entry.projectId;});
+  var cons = db.consultants.find(function(c){ return c.id === entry.consultantId; });
+  var proj = db.projects.find(function(p){ return p.id === entry.projectId; });
   var fields = {
-    "Semana (segunda-feira)": entry.weekStart||null,
-    "Consultor":              cons ? cons.name : "",
-    "Projeto":                proj ? proj.name : "",
-    "Etapa":                  entry.stage||"",
-    "Horas":                  Number(entry.hours||0),
-    "Tarefa Origem":          entry.taskOrigin||"",
-    "Inferido por IA":        !!entry.aiInferred,
-    "Confirmado":             !!entry.confirmed,
-    "Nota":                   entry.note||""
+    "Etapa":           entry.stage || "",
+    "Horas":           Number(entry.hours || 0),
+    "Tarefa Origem":   entry.taskOrigin || "",
+    "Inferido por IA": !!entry.aiInferred,
+    "Confirmado":      !!entry.confirmed,
+    "Nota":            entry.note || ""
   };
+  if (entry.weekStart) fields["Semana (segunda-feira)"] = entry.weekStart;
+  if (cons && cons._atId && cons._atId.startsWith('rec')) fields["Consultor"] = [cons._atId];
+  if (proj && proj._atId && proj._atId.startsWith('rec')) fields["Projeto"] = [proj._atId];
   try {
     if (entry._atId && entry._atId.startsWith('rec')) {
       await atUpdate(AT_TABLES.sprints, entry._atId, fields);
     } else {
-      var res = await atCreate(AT_TABLES.sprints, fields);
-      if (res.records && res.records[0]) {
-        entry._atId = res.records[0].id;
-        entry.id    = res.records[0].id;
-      }
+      var r = await atCreate(AT_TABLES.sprints, fields);
+      if (r.records && r.records[0]) entry._atId = r.records[0].id;
     }
-  } catch(e) { console.warn('atSaveSprint error:', e); }
+  } catch(e) { console.error('atSaveSprint ERROR:', e); }
 }
-
-async function atDeleteSprint(atId) {
-  if (!atId || !atId.startsWith('rec')) return;
-  try { await atDelete(AT_TABLES.sprints, atId); } catch(e) { console.warn('atDeleteSprint error:', e); }
-}
-
 async function atDeleteRecord(table, atId) {
   if (!atId || !atId.startsWith('rec')) return;
   try { await atDelete(table, atId); } catch(e) { console.warn('atDeleteRecord error:', e); }
@@ -1419,10 +1185,7 @@ function renderProjectCard(p, filterConsultId, selCons){
           if(a.startDate&&b.startDate) return a.startDate.localeCompare(b.startDate);
           return (a.order||0)-(b.order||0);
         });
-        if(allActTasks.length===0){
-          var tasksInProj=db.tasks.filter(t=>t.projectId===p.id&&t.level==='task');
-          if(tasksInProj.length>0) console.log('Tasks exist but parentId mismatch. act.id=',act.id,'task parentIds=',tasksInProj.map(t=>t.parentId));
-        }
+
       const actTasks=filterConsultId&&filterConsultId!=='unassigned'
         ?allActTasks.filter(t=>t.consultantId===filterConsultId||db.tasks.some(s=>s.parentId===t.id&&s.consultantId===filterConsultId))
         :filterConsultId==='unassigned'
@@ -1600,15 +1363,20 @@ function openModal(type, a, b, c, d){
     savebtn.onclick=()=>{
       const nome=document.getElementById('ft-nome').value.trim();
       if(!nome){alert('Informe o nome.');return;}
+      // Calculate order as max siblings + 10
+      var siblings = db.tasks.filter(function(t){return t.projectId===projId&&t.level===level&&t.parentId===parentId;});
+      var maxOrder = siblings.reduce(function(m,t){return Math.max(m,t.order||0);}, 0);
+      var newOrder = siblings.length ? maxOrder + 10 : 10;
       const newTask={
-        id:uid(),projectId:projId,level,parentId,
+        id:uid(),_atId:'',uid:crypto.randomUUID(),
+        projectId:projId,level,parentId,
         name:nome,
         consultantId:document.getElementById('ft-cons')?.value||null,
         hours:parseFloat(document.getElementById('ft-hrs')?.value)||0,
         realized:0,
         startDate:document.getElementById('ft-start')?.value||'',
         endDate:document.getElementById('ft-end')?.value||'',
-        order:db.tasks.filter(t=>t.projectId===projId&&t.level===level&&t.parentId===parentId).length
+        order:newOrder
       };
       db.tasks.push(newTask);
       save();
@@ -1705,34 +1473,71 @@ function openModal(type, a, b, c, d){
 
 function closeModal(){document.getElementById('modal-overlay').classList.remove('open');}
 
-function deleteProject(id){
-  if(!confirm('Excluir projeto e todas as suas tarefas?')) return;
-  db.projects=db.projects.filter(p=>p.id!==id);
-  db.tasks=db.tasks.filter(t=>t.projectId!==id);
-  save();renderAll();
-}
-
-function deleteTask(id){
-  // Delete task and all its children recursively
-  const toDelete=new Set([id]);
-  let changed=true;
-  while(changed){
-    changed=false;
-    db.tasks.forEach(t=>{if(t.parentId&&toDelete.has(t.parentId)&&!toDelete.has(t.id)){toDelete.add(t.id);changed=true;}});
+async function deleteProject(id) {
+  if (!confirm('Excluir projeto e todas as suas tarefas?')) return;
+  const proj = db.projects.find(function(p){ return p.id === id; });
+  const projectTasks = db.tasks.filter(function(t){ return t.projectId === id; });
+  for (var i = 0; i < projectTasks.length; i++) {
+    var t = projectTasks[i];
+    if (t._atId && t._atId.startsWith('rec')) {
+      try { await atDeleteRecord(AT_TABLES.tasks, t._atId); }
+      catch(e) { console.warn('Del task AT:', e.message); }
+    }
   }
-  db.tasks=db.tasks.filter(t=>!toDelete.has(t.id));
-  toDelete.forEach(tid=>collapsedNodes.delete(tid));
-  save();renderAll();
+  if (proj && proj._atId && proj._atId.startsWith('rec')) {
+    try { await atDeleteRecord(AT_TABLES.projects, proj._atId); }
+    catch(e) { console.warn('Del project AT:', e.message); }
+  }
+  db.tasks = db.tasks.filter(function(t){ return t.projectId !== id; });
+  db.projects = db.projects.filter(function(p){ return p.id !== id; });
+  save(); renderAll();
 }
 
-function deleteConsultant(id){
-  if(!confirm('Excluir consultor?')) return;
-  db.consultants=db.consultants.filter(c=>c.id!==id);
-  db.tasks=db.tasks.filter(t=>t.consultantId!==id).map(t=>t.consultantId===id?{...t,consultantId:null}:t);
-  save();renderAll();
+async function deleteTask(id) {
+  if (!confirm('Excluir esta tarefa e todas as subtarefas?')) return;
+  const toDelete = new Set([id]);
+  let changed = true;
+  while (changed) {
+    changed = false;
+    db.tasks.forEach(function(t) {
+      if (t.parentId && toDelete.has(t.parentId) && !toDelete.has(t.id)) {
+        toDelete.add(t.id); changed = true;
+      }
+    });
+  }
+  const deletedTasks = db.tasks.filter(function(t){ return toDelete.has(t.id); });
+  // Delete from Airtable first (integrity before UI update)
+  for (var i = 0; i < deletedTasks.length; i++) {
+    var t = deletedTasks[i];
+    if (t._atId && t._atId.startsWith('rec')) {
+      try { await atDeleteRecord(AT_TABLES.tasks, t._atId); }
+      catch(e) { console.warn('Delete AT error:', t.name, e.message); }
+    }
+  }
+  db.tasks = db.tasks.filter(function(t){ return !toDelete.has(t.id); });
+  toDelete.forEach(function(tid){ collapsedNodes.delete(tid); });
+  save(); renderAll();
 }
 
-// ─── RENDER CONSULTORES ───────────────────────────────────────────────────────
+async function deleteConsultant(id) {
+  if (!confirm('Excluir consultor? As tarefas vinculadas ficarão sem responsável.')) return;
+  var cons = db.consultants.find(function(c){ return c.id === id; });
+  var affectedTasks = db.tasks.filter(function(t){ return t.consultantId === id; });
+  if (cons && cons._atId && cons._atId.startsWith('rec')) {
+    try { await atDeleteRecord(AT_TABLES.consultants, cons._atId); }
+    catch(e) { console.warn('Del consultant AT:', e.message); }
+  }
+  for (var i = 0; i < affectedTasks.length; i++) {
+    var t = affectedTasks[i];
+    t.consultantId = null;
+    if (t._atId && t._atId.startsWith('rec')) {
+      try { await atUpdate(AT_TABLES.tasks, t._atId, {"Consultor": []}); }
+      catch(e) { console.warn('Clear consultant AT:', e.message); }
+    }
+  }
+  db.consultants = db.consultants.filter(function(c){ return c.id !== id; });
+  save(); renderAll();
+}
 function renderConsultores(){
   const el=document.getElementById('consult-list');
   if(!db.consultants.length){
@@ -2190,62 +1995,173 @@ function applyImport(){
   const totalHrsAll=sheets.reduce((a,s)=>a+s.totalHrs,0);
 
   // Find or create project
-  let proj=db.projects.find(p=>p.name.toLowerCase()===projectName.toLowerCase());
-  if(!proj){proj={id:uid(),name:projectName,client:'',start:'',deadline:''};db.projects.push(proj);log.textContent+=`✓ Projeto criado: ${projectName}\n`;}
-  else log.textContent+=`✓ Projeto atualizado: ${proj.name}\n`;
+  let proj=db.projects.find(function(p){return p.name.toLowerCase()===projectName.toLowerCase();});
+  if(!proj){
+    proj={id:uid(),_atId:'',name:projectName,client:'',start:'',deadline:''};
+    db.projects.push(proj);
+    log.textContent+=`✓ Projeto criado: ${projectName}\n`;
+  } else {
+    log.textContent+=`✓ Projeto encontrado: ${proj.name}\n`;
+  }
 
-  // Remove old PLANNED tasks for this project (keep realized data by preserving realized field)
-  const oldTasks=db.tasks.filter(t=>t.projectId===proj.id);
-  const realizedMap={};// key: atividade+tarefa → realized hours
-  oldTasks.forEach(t=>{if(t.realized){const k=(t.name||'').toLowerCase();realizedMap[k]=(realizedMap[k]||0)+t.realized;}});
-  db.tasks=db.tasks.filter(t=>t.projectId!==proj.id);
+  // Build uid→task map from existing tasks (for upsert)
+  var existingByUid={};
+  db.tasks.filter(function(t){return t.projectId===proj.id;}).forEach(function(t){
+    if(t.uid) existingByUid[t.uid]=t;
+  });
 
-  // Group tasks by atividade to build hierarchy
-  const activitiesMap={};
-  sheets.forEach(sheet=>{
+  // Collect all tasks to import with UIDs assigned
+  var activitiesMap={};
+  var toImport=[]; // {task, isNew}
+
+  sheets.forEach(function(sheet){
     // Find or create consultant
-    let c=db.consultants.find(x=>x.name.toLowerCase()===sheet.consultant.toLowerCase()||x.name.toLowerCase().startsWith(sheet.consultant.toLowerCase())||sheet.consultant.toLowerCase().startsWith(x.name.toLowerCase().split(' ')[0]));
-    if(!c){c={id:uid(),name:sheet.consultant,cargo:'',capacity:160};db.consultants.push(c);log.textContent+=`✓ Consultor criado: ${c.name}\n`;}
-    else log.textContent+=`✓ Consultor: ${c.name}\n`;
+    var c=db.consultants.find(function(x){
+      return x.name.toLowerCase()===sheet.consultant.toLowerCase()||
+             x.name.toLowerCase().startsWith(sheet.consultant.toLowerCase().split(' ')[0]);
+    });
+    if(!c){
+      c={id:uid(),_atId:'',name:sheet.consultant,cargo:'',capacity:160};
+      db.consultants.push(c);
+      log.textContent+=`✓ Consultor criado: ${c.name}\n`;
+    }
 
-    sheet.tasks.forEach((t,i)=>{
-      const ativKey=t.atividade.toLowerCase();
+    sheet.tasks.forEach(function(t){
+      var ativKey=t.atividade.toLowerCase();
+
+      // Create activity if not seen yet
       if(!activitiesMap[ativKey]){
-        activitiesMap[ativKey]={id:uid(),name:t.atividade,order:Object.keys(activitiesMap).length};
-        db.tasks.push({id:activitiesMap[ativKey].id,projectId:proj.id,level:'activity',parentId:null,name:t.atividade,hours:0,realized:0,startDate:'',endDate:'',order:activitiesMap[ativKey].order,consultantId:null});
+        // Check if activity already exists in db by name+project
+        var existingAct=db.tasks.find(function(x){
+          return x.projectId===proj.id&&x.level==='activity'&&x.name.toLowerCase()===ativKey;
+        });
+        if(existingAct){
+          activitiesMap[ativKey]=existingAct;
+        } else {
+          var newAct={
+            id:uid(),_atId:'',
+            uid:crypto.randomUUID(),
+            projectId:proj.id,level:'activity',parentId:null,
+            name:t.atividade,hours:0,realized:0,
+            startDate:t.startDate,endDate:t.endDate,
+            order:0,weeklyData:[],status:'todo',note:''
+          };
+          db.tasks.push(newAct);
+          activitiesMap[ativKey]=newAct;
+          toImport.push({task:newAct,isNew:true});
+        }
       }
-      const actId=activitiesMap[ativKey].id;
-      const taskName=t.tarefa||t.atividade;
-      const taskKey=taskName.toLowerCase();
-      const prevRealized=realizedMap[taskKey]||0;
-      db.tasks.push({
-        id:uid(),projectId:proj.id,level:'task',parentId:actId,
-        name:taskName,consultantId:c.id,
-        hours:t.hours,realized:prevRealized,
-        startDate:t.startDate,endDate:t.endDate,
-        weeklyData:t.weeklyData||[],
-        order:i
+      var actId=activitiesMap[ativKey].id;
+
+      // Create task with UID — check for existing by UID
+      var taskUid=crypto.randomUUID(); // will be overridden if matching existing
+      var taskName=t.tarefa||t.atividade;
+      // Try to find existing task by name+activity
+      var existingTask=db.tasks.find(function(x){
+        return x.projectId===proj.id&&x.level==='task'&&
+               x.parentId===actId&&x.name.toLowerCase()===taskName.toLowerCase();
       });
+      if(existingTask){
+        // Update existing task
+        existingTask.hours=t.hours;
+        existingTask.startDate=t.startDate;
+        existingTask.endDate=t.endDate;
+        existingTask.weeklyData=t.weeklyData||[];
+        toImport.push({task:existingTask,isNew:false});
+      } else {
+        var newTask={
+          id:uid(),_atId:'',
+          uid:taskUid,
+          projectId:proj.id,level:'task',parentId:actId,
+          name:taskName,consultantId:c.id,
+          hours:t.hours,realized:0,
+          startDate:t.startDate,endDate:t.endDate,
+          weeklyData:t.weeklyData||[],
+          order:0,status:'todo',note:''
+        };
+        db.tasks.push(newTask);
+        toImport.push({task:newTask,isNew:true});
+      }
     });
   });
 
-  log.textContent+=`✓ Importação concluída! ${Math.round(totalHrsAll)}h planejadas no projeto.\n`;
+  // Sort siblings by startDate and assign Ordem
+  function assignOrdem(siblings){
+    siblings.sort(function(a,b){
+      if(a.startDate&&b.startDate) return a.startDate.localeCompare(b.startDate);
+      return 0;
+    });
+    siblings.forEach(function(t,i){ t.order=(i+1)*10; });
+  }
+  // Assign order to activities
+  var acts=db.tasks.filter(function(t){return t.projectId===proj.id&&t.level==='activity';});
+  assignOrdem(acts);
+  // Assign order to tasks per activity
+  acts.forEach(function(act){
+    var children=db.tasks.filter(function(t){return t.projectId===proj.id&&t.level==='task'&&t.parentId===act.id;});
+    assignOrdem(children);
+  });
+
+  log.textContent+=`✓ Importação local concluída! ${Math.round(totalHrsAll)}h planejadas.\n`;
   document.getElementById('preview-card').style.display='none';
   importPreview=null;
   save();
-  // Sync to Airtable
+
+  // Sync to Airtable sequentially: project → activities → tasks → subtasks
   log.textContent+='Sincronizando com Airtable...\n';
-  atSaveProject(proj).then(function() {
-    var newTasks = db.tasks.filter(function(t){return t.projectId===proj.id;});
-    return Promise.all(newTasks.map(function(t){return atSaveTask(t);}));
-  }).then(function(){
-    log.textContent+='✓ Salvo no Airtable.\n';
-    renderAll();
-  }).catch(function(e){
-    log.textContent+='Aviso: erro ao salvar no Airtable: '+e.message+'\n';
-    renderAll();
-  });
+  (async function(){
+    try {
+      // Save project
+      await atSaveProject(proj);
+      log.textContent+='✓ Projeto salvo.\n';
+
+      // Layer 1: activities — no parent dependency
+      // Reload existing Airtable tasks for UID reconciliation
+      var atTaskRecs = [];
+      try { atTaskRecs = await atList(AT_TABLES.tasks); } catch(e) {}
+      var atByUid = {};
+      atTaskRecs.forEach(function(r){ if(r.fields["UID"]) atByUid[r.fields["UID"]] = r.id; });
+
+      function bindUid(task) {
+        if (task.uid && atByUid[task.uid] && !task._atId) {
+          task._atId = atByUid[task.uid];
+        }
+      }
+
+      var activities=db.tasks.filter(function(t){return t.projectId===proj.id&&t.level==='activity';});
+      for(var i=0;i<activities.length;i++){
+        bindUid(activities[i]);
+        await atSaveTask(activities[i]);
+        // _atId is now set — children can reference it
+      }
+      log.textContent+=`✓ ${activities.length} atividade(s) salva(s).\n`;
+
+      // Layer 2: tasks — parent activities now have _atId
+      var tasks=db.tasks.filter(function(t){return t.projectId===proj.id&&t.level==='task';});
+      for(var i=0;i<tasks.length;i++){
+        bindUid(tasks[i]);
+        await atSaveTask(tasks[i]);
+      }
+      log.textContent+=`✓ ${tasks.length} tarefa(s) salva(s).\n`;
+
+      // Layer 3: subtasks — parent tasks now have _atId
+      var subtasks=db.tasks.filter(function(t){return t.projectId===proj.id&&t.level==='subtask';});
+      for(var i=0;i<subtasks.length;i++){
+        bindUid(subtasks[i]);
+        await atSaveTask(subtasks[i]);
+      }
+      if(subtasks.length) log.textContent+=`✓ ${subtasks.length} subtarefa(s) salva(s).\n`;
+
+      log.textContent+='✓ Sincronização concluída!\n';
+      renderAll();
+    } catch(e){
+      log.textContent+='Aviso: erro ao salvar no Airtable: '+e.message+'\n';
+      console.error('Import AT error:',e);
+      renderAll();
+    }
+  })();
 }
+
 
 function cancelImport(){document.getElementById('preview-card').style.display='none';importPreview=null;}
 
@@ -2629,34 +2545,6 @@ function cycleStatus(taskId, btn) {
 function updateNote(taskId, val) {
   const t = db.tasks.find(x => x.id === taskId);
   if (t) { t.note = val; save(); atSaveTask(t); }
-}
-
-function updateTaskField(taskId, field, val) {
-  const t = db.tasks.find(x => x.id === taskId);
-  if (!t) return;
-  t[field] = val;
-  save(); atSaveTask(t);
-  if (document.getElementById("sec-cronograma")?.classList.contains("active")) renderCronograma();
-  if (document.getElementById("sec-timeline")?.classList.contains("active")) renderTimeline();
-}
-
-function deleteMtgTask(taskId) {
-  if (!confirm("Excluir esta tarefa e subtarefas?")) return;
-  const toDelete = new Set([taskId]);
-  let changed = true;
-  while (changed) {
-    changed = false;
-    db.tasks.forEach(t => { if (t.parentId && toDelete.has(t.parentId) && !toDelete.has(t.id)) { toDelete.add(t.id); changed = true; } });
-  }
-  var deletedTasks = db.tasks.filter(t => toDelete.has(t.id));
-  db.tasks = db.tasks.filter(t => !toDelete.has(t.id));
-  toDelete.forEach(id => collapsedNodes.delete(id));
-  deletedTasks.forEach(function(t){ if(t._atId) atDeleteRecord(AT_TABLES.tasks, t._atId); });
-  save();
-  renderReuniao();
-  renderGeral(); renderProjetos(); renderAlertas();
-  if (document.getElementById("sec-cronograma")?.classList.contains("active")) renderCronograma();
-  if (document.getElementById("sec-timeline")?.classList.contains("active")) renderTimeline();
 }
 
 function updateTaskField(taskId, field, val) {
