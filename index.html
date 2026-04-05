@@ -972,6 +972,200 @@ let collapsedNodes=new Set(); // ids of collapsed activity/task rows
 
 // ─── PERSISTENCE ──────────────────────────────────────────────────────────────
 function save(){try{localStorage.setItem('gh_v4',JSON.stringify({db,collapsed:[...collapsedNodes]}));}catch(e){}}
+
+// ── Airtable write helpers ────────────────────────────────────────────────────
+async function atSaveProject(proj) {
+  var fields = {"Nome":proj.name||"","Cliente":proj.client||""};
+  if (proj.start) fields["Start"] = proj.start;
+  if (proj.deadline) fields["Prazo"] = proj.deadline;
+  try {
+    if (proj._atId && proj._atId.startsWith('rec')) { await atUpdate(AT_TABLES.projects, proj._atId, fields); }
+    else { var r=await atCreate(AT_TABLES.projects,fields); if(r.records&&r.records[0]){proj._atId=r.records[0].id;proj.id=r.records[0].id;} }
+    writeLog('Salvou projeto','Projetos',proj.name,'','','');
+  } catch(e){console.warn('atSaveProject:',e);}
+}
+
+async function atSaveConsultant(cons) {
+  var fields = {"Nome":cons.name||"","Cargo":cons.cargo||"","Capacidade Mensal (h)":Number(cons.capacity||160),"PIN":Number(cons.pin||0),"Admin":!!cons.isAdmin};
+  try {
+    if (cons._atId && cons._atId.startsWith('rec')) { await atUpdate(AT_TABLES.consultants, cons._atId, fields); }
+    else { var r=await atCreate(AT_TABLES.consultants,fields); if(r.records&&r.records[0]){cons._atId=r.records[0].id;cons.id=r.records[0].id;} }
+    writeLog('Salvou consultor','Consultores',cons.name,'','','');
+  } catch(e){console.warn('atSaveConsultant:',e);}
+}
+
+async function atSaveTask(task) {
+  var proj = db.projects.find(function(p){return p.id===task.projectId;});
+  var cons = db.consultants.find(function(c){return c.id===task.consultantId;});
+  var pai  = task.parentId ? db.tasks.find(function(t){return t.id===task.parentId;}) : null;
+  var lvlMap = {activity:'atividade',task:'tarefa',subtask:'subtarefa'};
+  var fields = {
+    "Nome":task.name||"","Nivel":lvlMap[task.level]||task.level,
+    "Horas Planejadas":Number(task.hours||0),"Horas Realizadas":Number(task.realized||0),
+    "Status":task.status||"todo","Nota":task.note||"","Ordem":Number(task.order||0)
+  };
+  if (task.startDate) fields["Data Inicio"] = task.startDate;
+  if (task.endDate)   fields["Data Fim"]    = task.endDate;
+  if (proj) fields["Projeto"]   = proj.name;
+  if (cons) fields["Consultor"] = cons.name;
+  if (pai && task.level==='task')    fields["Atividade Pai"] = pai.name;
+  if (pai && task.level==='subtask') fields["Tarefa Pai"]    = pai.name;
+  try {
+    if (task._atId && task._atId.startsWith('rec')) { await atUpdate(AT_TABLES.tasks, task._atId, fields); }
+    else { var r=await atCreate(AT_TABLES.tasks,fields); if(r.records&&r.records[0]){task._atId=r.records[0].id;task.id=r.records[0].id;} }
+    writeLog('Salvou tarefa','Tarefas',task.name,'','','');
+  } catch(e){console.warn('atSaveTask:',e);}
+}
+
+async function atSaveSprint(entry) {
+  var cons = db.consultants.find(function(c){return c.id===entry.consultantId;});
+  var proj = db.projects.find(function(p){return p.id===entry.projectId;});
+  var fields = {
+    "Etapa":entry.stage||"","Horas":Number(entry.hours||0),
+    "Tarefa Origem":entry.taskOrigin||"","Inferido por IA":!!entry.aiInferred,
+    "Confirmado":!!entry.confirmed,"Nota":entry.note||""
+  };
+  if (entry.weekStart) fields["Semana (segunda-feira)"] = entry.weekStart;
+  if (cons) fields["Consultor"] = cons.name;
+  if (proj) fields["Projeto"]   = proj.name;
+  try {
+    if (entry._atId && entry._atId.startsWith('rec')) { await atUpdate(AT_TABLES.sprints, entry._atId, fields); }
+    else { var r=await atCreate(AT_TABLES.sprints,fields); if(r.records&&r.records[0]){entry._atId=r.records[0].id;entry.id=r.records[0].id;} }
+  } catch(e){console.warn('atSaveSprint:',e);}
+}
+
+async function atDeleteRecord(table, atId) {
+  if (!atId||!atId.startsWith('rec')) return;
+  try { await atDelete(table, atId); } catch(e){console.warn('atDeleteRecord:',e);}
+}
+
+
+// ── Airtable write helpers ────────────────────────────────────────────────────
+async function atSaveProject(proj) {
+  var fields = {
+    "Nome":            proj.name||"",
+    "Cliente":         proj.client||"",
+    "Start":           proj.start||null,
+    "Prazo":           proj.deadline||null
+  };
+  try {
+    if (proj._atId) {
+      await atUpdate(AT_TABLES.projects, proj._atId, fields);
+    } else {
+      var res = await atCreate(AT_TABLES.projects, fields);
+      if (res.records && res.records[0]) {
+        proj._atId = res.records[0].id;
+        proj.id    = res.records[0].id;
+      }
+    }
+    await writeLog('Salvou projeto', 'Projetos', proj.name, '', '', '');
+  } catch(e) { console.warn('atSaveProject error:', e); }
+}
+
+async function atSaveConsultant(cons) {
+  var fields = {
+    "Nome":                   cons.name||"",
+    "Cargo":                  cons.cargo||"",
+    "Capacidade Mensal (h)":  Number(cons.capacity||160),
+    "PIN":                    Number(cons.pin||0),
+    "Admin":                  !!cons.isAdmin
+  };
+  try {
+    if (cons._atId) {
+      await atUpdate(AT_TABLES.consultants, cons._atId, fields);
+    } else {
+      var res = await atCreate(AT_TABLES.consultants, fields);
+      if (res.records && res.records[0]) {
+        cons._atId = res.records[0].id;
+        cons.id    = res.records[0].id;
+      }
+    }
+    await writeLog('Salvou consultor', 'Consultores', cons.name, '', '', '');
+  } catch(e) { console.warn('atSaveConsultant error:', e); }
+}
+
+async function atSaveTask(task) {
+  // Build fields — Projeto and Consultor are plain text in this Airtable setup
+  var proj = db.projects.find(function(p){return p.id===task.projectId;});
+  var cons = db.consultants.find(function(c){return c.id===task.consultantId;});
+  var actPai = task.level==='task' && task.parentId ? db.tasks.find(function(t){return t.id===task.parentId;}) : null;
+  var tarPai = task.level==='subtask' && task.parentId ? db.tasks.find(function(t){return t.id===task.parentId;}) : null;
+
+  // Map level back to Portuguese for Airtable
+  var levelMap = {activity:'atividade', task:'tarefa', subtask:'subtarefa'};
+
+  var fields = {
+    "Nome":              task.name||"",
+    "Nivel":             levelMap[task.level]||task.level,
+    "Horas Planejadas":  Number(task.hours||0),
+    "Horas Realizadas":  Number(task.realized||0),
+    "Status":            task.status||"todo",
+    "Data Inicio":       task.startDate||null,
+    "Data Fim":          task.endDate||null,
+    "Nota":              task.note||"",
+    "Ordem":             Number(task.order||0)
+  };
+  // Link projeto and consultor by name (text field in Airtable)
+  if (proj) fields["Projeto"] = proj.name;
+  if (cons) fields["Consultor"] = cons.name;
+  if (actPai && task.level==='task') fields["Atividade Pai"] = actPai.name;
+  if (tarPai && task.level==='subtask') fields["Tarefa Pai"] = tarPai.name;
+
+  try {
+    if (task._atId && task._atId.startsWith('rec')) {
+      await atUpdate(AT_TABLES.tasks, task._atId, fields);
+    } else {
+      var res = await atCreate(AT_TABLES.tasks, fields);
+      if (res.records && res.records[0]) {
+        task._atId = res.records[0].id;
+        task.id    = res.records[0].id;
+      }
+    }
+    await writeLog('Salvou tarefa', 'Tarefas', task.name, '', '', '');
+  } catch(e) { console.warn('atSaveTask error:', e); }
+}
+
+async function atDeleteTask(atId) {
+  if (!atId || !atId.startsWith('rec')) return;
+  try { await atDelete(AT_TABLES.tasks, atId); } catch(e) { console.warn('atDeleteTask error:', e); }
+}
+
+async function atSaveSprint(entry) {
+  var cons = db.consultants.find(function(c){return c.id===entry.consultantId;});
+  var proj = db.projects.find(function(p){return p.id===entry.projectId;});
+  var fields = {
+    "Semana (segunda-feira)": entry.weekStart||null,
+    "Consultor":              cons ? cons.name : "",
+    "Projeto":                proj ? proj.name : "",
+    "Etapa":                  entry.stage||"",
+    "Horas":                  Number(entry.hours||0),
+    "Tarefa Origem":          entry.taskOrigin||"",
+    "Inferido por IA":        !!entry.aiInferred,
+    "Confirmado":             !!entry.confirmed,
+    "Nota":                   entry.note||""
+  };
+  try {
+    if (entry._atId && entry._atId.startsWith('rec')) {
+      await atUpdate(AT_TABLES.sprints, entry._atId, fields);
+    } else {
+      var res = await atCreate(AT_TABLES.sprints, fields);
+      if (res.records && res.records[0]) {
+        entry._atId = res.records[0].id;
+        entry.id    = res.records[0].id;
+      }
+    }
+  } catch(e) { console.warn('atSaveSprint error:', e); }
+}
+
+async function atDeleteSprint(atId) {
+  if (!atId || !atId.startsWith('rec')) return;
+  try { await atDelete(AT_TABLES.sprints, atId); } catch(e) { console.warn('atDeleteSprint error:', e); }
+}
+
+async function atDeleteRecord(table, atId) {
+  if (!atId || !atId.startsWith('rec')) return;
+  try { await atDelete(table, atId); } catch(e) { console.warn('atDeleteRecord error:', e); }
+}
 function load(){
   try{
     const r=localStorage.getItem('gh_v4');
@@ -1371,7 +1565,7 @@ function toggleCollapse(id){ if(collapsedNodes.has(id)) collapsedNodes.delete(id
 
 function updateRealized(taskId,val){
   const t=db.tasks.find(x=>x.id===taskId);
-  if(t){ t.realized=parseFloat(val)||0; save(); renderGeral(); renderAlertas(); }
+  if(t){ t.realized=parseFloat(val)||0; save(); atSaveTask(t); renderGeral(); renderAlertas(); }
 }
 
 // ─── TASK MODALS ──────────────────────────────────────────────────────────────
@@ -1398,8 +1592,8 @@ function openModal(type, a, b, c, d){
       const nome=document.getElementById('fp-nome').value.trim();
       if(!nome){alert('Informe o nome.');return;}
       if(p){p.name=nome;p.client=document.getElementById('fp-cli').value.trim();p.start=document.getElementById('fp-start').value;p.deadline=document.getElementById('fp-end').value;}
-      else db.projects.push({id:uid(),name:nome,client:document.getElementById('fp-cli').value.trim(),start:document.getElementById('fp-start').value,deadline:document.getElementById('fp-end').value});
-      save();renderAll();closeModal();
+      else{var np={id:uid(),_atId:'',name:nome,client:document.getElementById('fp-cli').value.trim(),start:document.getElementById('fp-start').value,deadline:document.getElementById('fp-end').value};db.projects.push(np);p=np;}
+      save();atSaveProject(p);renderAll();closeModal();
     };
   }
 
@@ -1440,7 +1634,7 @@ function openModal(type, a, b, c, d){
         order:db.tasks.filter(t=>t.projectId===projId&&t.level===level&&t.parentId===parentId).length
       };
       db.tasks.push(newTask);
-      save();renderAll();closeModal();
+      save();atSaveTask(newTask);renderAll();closeModal();
     };
   }
 
@@ -1492,7 +1686,7 @@ function openModal(type, a, b, c, d){
       if(document.getElementById('et-end')) t.endDate=document.getElementById('et-end').value;
       if(document.getElementById('et-status')) t.status=document.getElementById('et-status').value;
       if(document.getElementById('et-note')) t.note=document.getElementById('et-note').value;
-      save();renderAll();closeModal();
+      save();atSaveTask(t);renderAll();closeModal();
     };
   }
 
@@ -1509,8 +1703,8 @@ function openModal(type, a, b, c, d){
       const nome=document.getElementById('fc-nome').value.trim();
       if(!nome){alert('Informe o nome.');return;}
       if(c){c.name=nome;c.cargo=document.getElementById('fc-cargo').value.trim();c.capacity=parseInt(document.getElementById('fc-cap').value)||160;}
-      else db.consultants.push({id:uid(),name:nome,cargo:document.getElementById('fc-cargo').value.trim(),capacity:parseInt(document.getElementById('fc-cap').value)||160});
-      save();renderAll();closeModal();
+      else{var nc={id:uid(),_atId:'',name:nome,cargo:document.getElementById('fc-cargo').value.trim(),capacity:parseInt(document.getElementById('fc-cap').value)||160};db.consultants.push(nc);c=nc;}
+      save();atSaveConsultant(c);renderAll();closeModal();
     };
   }
 
@@ -2408,21 +2602,21 @@ function cycleStatus(taskId, btn) {
   t.status = cycle[t.status || 'todo'];
   btn.textContent = labels[t.status];
   btn.className = 'sbtn ' + classes[t.status];
-  save();
+  save();atSaveTask(t);
   // Also refresh cronograma if visible
   if (document.getElementById('sec-cronograma')?.classList.contains('active')) renderCronograma();
 }
 
 function updateNote(taskId, val) {
   const t = db.tasks.find(x => x.id === taskId);
-  if (t) { t.note = val; save(); }
+  if (t) { t.note = val; save(); atSaveTask(t); }
 }
 
 function updateTaskField(taskId, field, val) {
   const t = db.tasks.find(x => x.id === taskId);
   if (!t) return;
   t[field] = val;
-  save();
+  save(); atSaveTask(t);
   if (document.getElementById("sec-cronograma")?.classList.contains("active")) renderCronograma();
   if (document.getElementById("sec-timeline")?.classList.contains("active")) renderTimeline();
 }
@@ -2435,8 +2629,10 @@ function deleteMtgTask(taskId) {
     changed = false;
     db.tasks.forEach(t => { if (t.parentId && toDelete.has(t.parentId) && !toDelete.has(t.id)) { toDelete.add(t.id); changed = true; } });
   }
+  var deletedTasks = db.tasks.filter(t => toDelete.has(t.id));
   db.tasks = db.tasks.filter(t => !toDelete.has(t.id));
   toDelete.forEach(id => collapsedNodes.delete(id));
+  deletedTasks.forEach(function(t){ if(t._atId) atDeleteRecord(AT_TABLES.tasks, t._atId); });
   save();
   renderReuniao();
   renderGeral(); renderProjetos(); renderAlertas();
@@ -2448,7 +2644,7 @@ function updateTaskField(taskId, field, val) {
   const t = db.tasks.find(x => x.id === taskId);
   if (!t) return;
   t[field] = val;
-  save();
+  save(); atSaveTask(t);
   // Refresh cronograma and timeline silently if open
   if (document.getElementById('sec-cronograma')?.classList.contains('active')) renderCronograma();
   if (document.getElementById('sec-timeline')?.classList.contains('active')) renderTimeline();
@@ -2462,8 +2658,10 @@ function deleteMtgTask(taskId) {
     changed = false;
     db.tasks.forEach(t => { if (t.parentId && toDelete.has(t.parentId) && !toDelete.has(t.id)) { toDelete.add(t.id); changed = true; } });
   }
+  var deletedTasks = db.tasks.filter(t => toDelete.has(t.id));
   db.tasks = db.tasks.filter(t => !toDelete.has(t.id));
   toDelete.forEach(id => collapsedNodes.delete(id));
+  deletedTasks.forEach(function(t){ if(t._atId) atDeleteRecord(AT_TABLES.tasks, t._atId); });
   save();
   renderReuniao();
   // Refresh other views silently
@@ -2671,14 +2869,16 @@ function updateSprintEntry(id, field, value) {
   if (!e) return;
   e[field] = value;
   if (field === 'stage') e.confirmed = true; // manual change = confirmed
-  save();
+  save(); atSaveSprint(e);
   if (field === 'projectId' || field === 'consultantId') renderSprint();
   else renderSprintSummary(currentSprintEntries());
 }
 
 function deleteSprintEntry(id) {
   if (!confirm('Excluir este lançamento?')) return;
+  var delEntry = (db.sprints||[]).find(e=>e.id===id);
   db.sprints = (db.sprints||[]).filter(e=>e.id!==id);
+  if (delEntry && delEntry._atId) atDeleteRecord(AT_TABLES.sprints, delEntry._atId);
   save(); renderSprint();
 }
 
