@@ -1616,11 +1616,13 @@ function openModal(type, a, b, c, d){
       if (newTask.level !== 'activity' && newTask.parentId) {
         var parentTask = db.tasks.find(function(t){return t.id===newTask.parentId;});
         if (!parentTask || !parentTask._atId || !parentTask._atId.startsWith('rec')) {
-          alert('Atividade pai ainda não foi sincronizada com o Airtable. Clique em Sincronizar primeiro.');
+          alert('A atividade pai ainda não foi sincronizada. Clique em Sincronizar e tente novamente.');
           renderAll();closeModal();return;
         }
       }
-      atSaveTask(newTask);renderAll();closeModal();
+      // Await atSaveTask so _atId is updated before renderAll refreshes DOM
+      atSaveTask(newTask).then(function(){ renderAll(); }).catch(function(){ renderAll(); });
+      closeModal();
     };
   }
 
