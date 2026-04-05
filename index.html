@@ -891,25 +891,22 @@ async function loadFromAirtable() {
     }
 
     var taskRecs = await atList(AT_TABLES.tasks);
+    // taskByName kept for legacy compatibility
     var taskByName = {};
     taskRecs.forEach(function(r) { taskByName[(r.fields["Nome"]||"").toLowerCase()]=r.id; });
-    function resolveParent(val) {
-      if (!val) return null;
-      var arr = Array.isArray(val)?val:[val];
-      var v = String(arr[0]||"");
-      if (!v) return null;
-      if (v.startsWith("rec")) return v;
-      return taskByName[v.toLowerCase()]||null;
-    }
 
     db.tasks = taskRecs.map(function(r) {
       var f = r.fields;
+      // All relationship fields are linked records — arrays of recXXX IDs
+      var projectId    = f["Projeto"]   && f["Projeto"].length   ? f["Projeto"][0]   : "";
+      var consultantId = f["Consultor"] && f["Consultor"].length ? f["Consultor"][0] : "";
+      var parentId     = f["Pai"]       && f["Pai"].length       ? f["Pai"][0]       : null;
       return {
         id:r.id, _atId:r.id,
-        projectId:    resolveId(f["Projeto"], projByName),
-        consultantId: resolveId(f["Consultor"], consByName),
+        projectId:    projectId,
+        consultantId: consultantId,
         level:        resolveLevel(f["Nivel"]),
-        parentId:     resolveParent(f["Atividade Pai"])||resolveParent(f["Tarefa Pai"]),
+        parentId:     parentId,
         name:         f["Nome"]||"",
         hours:        Number(f["Horas Planejadas"]||0),
         realized:     Number(f["Horas Realizadas"]||0),
@@ -917,7 +914,7 @@ async function loadFromAirtable() {
         startDate:    f["Data Inicio"]||"",
         endDate:      f["Data Fim"]||"",
         note:         f["Nota"]||"",
-        order:        Number(f["Ordem"]||0),
+        order:        0,
         weeklyData:   []
       };
     });
@@ -1008,8 +1005,7 @@ async function atSaveTask(task) {
     "Nivel":     lvlMap[task.level]||task.level,
     "Horas Planejadas": Number(task.hours||0),
     "Horas Realizadas": Number(task.realized||0),
-    "Nota":      task.note||"",
-    "Ordem":     Number(task.order||0)
+    "Nota":      task.note||""
   };
   if (task.level !== 'activity') fields["Status"] = safeStatus;
   if (task.startDate) fields["Data Inicio"] = task.startDate;
@@ -1462,6 +1458,10 @@ function renderProjectCard(p, filterConsultId, selCons){
           if(a.startDate&&b.startDate) return a.startDate.localeCompare(b.startDate);
           return (a.order||0)-(b.order||0);
         });
+        if(allActTasks.length===0){
+          var tasksInProj=db.tasks.filter(t=>t.projectId===p.id&&t.level==='task');
+          if(tasksInProj.length>0) console.log('Tasks exist but parentId mismatch. act.id=',act.id,'task parentIds=',tasksInProj.map(t=>t.parentId));
+        }
       const actTasks=filterConsultId&&filterConsultId!=='unassigned'
         ?allActTasks.filter(t=>t.consultantId===filterConsultId||db.tasks.some(s=>s.parentId===t.id&&s.consultantId===filterConsultId))
         :filterConsultId==='unassigned'
