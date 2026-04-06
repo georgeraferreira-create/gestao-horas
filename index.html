@@ -618,7 +618,7 @@ let ghSessionId = sessionStorage.getItem(SESSION_KEY);
 if (!ghSessionId) {
   ghSessionId = crypto.randomUUID();
   sessionStorage.setItem(SESSION_KEY, ghSessionId);
-}───
+}
 const MONTHS=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
 const TODAY=new Date(); TODAY.setHours(0,0,0,0);
 const PROJ_COLORS=['#3b82f6','#10b981','#f59e0b','#8b5cf6','#ef4444','#06b6d4','#f97316','#84cc16'];
